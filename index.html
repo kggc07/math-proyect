@@ -443,50 +443,97 @@
         // Generar problema
         function generateProblem() {
             var min, max, operations;
+            var allowNegatives = difficulty !== 'easy'; // Solo permitir negativos en medio y difícil
             
             if (difficulty === 'easy') {
                 min = 1; max = 10;
                 operations = ['+', '-'];
             } else if (difficulty === 'medium') {
-                min = 1; max = 20;
+                min = -15; max = 20; // Incluir algunos números negativos en nivel medio
                 operations = ['+', '-', '*'];
             } else {
-                min = 1; max = 30;
+                min = -25; max = 30; // Más números negativos en nivel difícil
                 operations = ['+', '-', '*', '/'];
             }
             
+            // Generar números para la operación
             var num1 = Math.floor(Math.random() * (max - min + 1)) + min;
             var num2 = Math.floor(Math.random() * (max - min + 1)) + min;
             var op = operations[Math.floor(Math.random() * operations.length)];
             
             var correctAnswer, problemText;
             
+            // Formatear números negativos para mostrar
+            function formatNumber(num) {
+                return num < 0 ? '(' + num + ')' : num.toString();
+            }
+            
             if (op === '+') {
                 correctAnswer = num1 + num2;
-                problemText = num1 + ' + ' + num2;
+                problemText = formatNumber(num1) + ' + ' + formatNumber(num2);
             } else if (op === '-') {
-                if (num1 < num2) {
+                // Para nivel fácil, asegurarse que el resultado no sea negativo
+                if (difficulty === 'easy' && num1 < num2) {
                     var temp = num1;
                     num1 = num2;
                     num2 = temp;
                 }
                 correctAnswer = num1 - num2;
-                problemText = num1 + ' - ' + num2;
+                problemText = formatNumber(num1) + ' - ' + formatNumber(num2);
             } else if (op === '*') {
+                // Aplicar ley de signos para multiplicación
                 correctAnswer = num1 * num2;
-                problemText = num1 + ' × ' + num2;
+                problemText = formatNumber(num1) + ' × ' + formatNumber(num2);
             } else {
-                correctAnswer = num2;
-                num1 = num1 * num2;
-                problemText = num1 + ' ÷ ' + num2;
+                // Para la división, asegurarse que num2 no sea cero
+                while (num2 === 0) {
+                    num2 = Math.floor(Math.random() * (max - min + 1)) + min;
+                }
+                
+                // Para nivel fácil y medio, hacer que la división sea exacta
+                if (difficulty !== 'hard') {
+                    // Crear una división con resultado entero
+                    correctAnswer = Math.floor(Math.random() * 10) + 1; // Un resultado entre 1 y 10
+                    if (Math.random() < 0.5 && allowNegatives) {
+                        correctAnswer *= -1; // Hacer que el resultado sea negativo en algunos casos
+                    }
+                    num1 = correctAnswer * num2;
+                } else {
+                    // En nivel difícil, podemos tener divisiones con decimales
+                    if (Math.abs(num1) < Math.abs(num2)) {
+                        var temp = num1;
+                        num1 = num2;
+                        num2 = temp;
+                    }
+                    correctAnswer = Math.round((num1 / num2) * 10) / 10; // Redondear a 1 decimal
+                }
+                
+                problemText = formatNumber(num1) + ' ÷ ' + formatNumber(num2);
             }
             
-            document.getElementById('problem-display').textContent = problemText;
+            document.getElementById('problem-display').innerHTML = problemText;
             
             // Generar opciones
             var options = [correctAnswer];
+            var optionRange = Math.max(Math.abs(correctAnswer) * 2, 50); // Rango dinámico para opciones
+            
             while (options.length < 16) {
-                var option = Math.floor(Math.random() * 50) + 1;
+                var option;
+                if (correctAnswer !== 0 && Math.random() < 0.3 && allowNegatives) {
+                    // Incluir negativos entre las opciones
+                    option = -Math.floor(Math.random() * optionRange);
+                } else {
+                    option = Math.floor(Math.random() * optionRange);
+                    if (Math.random() < 0.5 && allowNegatives) {
+                        option *= -1;
+                    }
+                }
+                
+                // Para la división en nivel difícil, incluir opciones con decimales
+                if (op === '/' && difficulty === 'hard') {
+                    option = Math.round(option * 10) / 10;
+                }
+                
                 if (!options.includes(option)) {
                     options.push(option);
                 }
@@ -513,9 +560,9 @@
             // Marcar opciones
             var options = document.getElementsByClassName('option');
             for (var i = 0; i < options.length; i++) {
-                if (parseInt(options[i].textContent) === correct) {
+                if (parseFloat(options[i].textContent) === correct) {
                     options[i].className = 'option correct';
-                } else if (parseInt(options[i].textContent) === selected && selected !== correct) {
+                } else if (parseFloat(options[i].textContent) === selected && selected !== correct) {
                     options[i].className = 'option incorrect';
                 }
                 // Deshabilitar clic
