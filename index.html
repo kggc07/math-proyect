@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathChallenge - Básico</title>
+    <title>MathChallenge - Juego de Matemáticas</title>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -113,6 +113,36 @@
             transition: width 1s linear;
         }
         
+        /* Selector de dificultad */
+        .difficulty-selector {
+            margin: 15px 0;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .difficulty-button {
+            padding: 8px 15px;
+            background-color: #e0e8f5;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .difficulty-button:hover {
+            background-color: #d0dcf0;
+        }
+
+        .difficulty-button.selected {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        
         /* Tabla de clasificación */
         table {
             width: 100%;
@@ -142,6 +172,17 @@
         <!-- Pantalla de Inicio -->
         <div id="loginScreen">
             <input type="text" id="nameInput" placeholder="Tu nombre de jugador">
+            
+            <!-- Selector de dificultad -->
+            <div class="difficulty-selector">
+                <p>Selecciona la dificultad:</p>
+                <div class="difficulty-buttons">
+                    <button class="difficulty-button selected" id="easy-button">Fácil</button>
+                    <button class="difficulty-button" id="medium-button">Medio</button>
+                    <button class="difficulty-button" id="hard-button">Difícil</button>
+                </div>
+            </div>
+            
             <button id="startButton">Comenzar Juego</button>
         </div>
         
@@ -179,6 +220,7 @@
             <tr>
                 <th>Posición</th>
                 <th>Jugador</th>
+                <th>Dificultad</th>
                 <th>Puntuación</th>
             </tr>
             <tbody id="leaderboard">
@@ -195,6 +237,7 @@
         let timerInterval;
         let currentProblem = {};
         let highScores = [];
+        let difficulty = "easy"; // Valores posibles: "easy", "medium", "hard"
         
         // Elementos DOM
         const loginScreen = document.getElementById('loginScreen');
@@ -211,6 +254,9 @@
         const finalScoreEl = document.getElementById('finalScore');
         const restartButton = document.getElementById('restartButton');
         const leaderboardEl = document.getElementById('leaderboard');
+        const easyButton = document.getElementById('easy-button');
+        const mediumButton = document.getElementById('medium-button');
+        const hardButton = document.getElementById('hard-button');
         
         // Evento de inicio
         startButton.onclick = function() {
@@ -233,18 +279,58 @@
             }
         });
         
+        // Eventos de dificultad
+        easyButton.addEventListener('click', function() {
+            setDifficulty('easy');
+        });
+
+        mediumButton.addEventListener('click', function() {
+            setDifficulty('medium');
+        });
+
+        hardButton.addEventListener('click', function() {
+            setDifficulty('hard');
+        });
+        
         // Reiniciar juego
         restartButton.onclick = function() {
             resultsEl.style.display = 'none';
             startGame();
         };
         
+        // Establecer dificultad
+        function setDifficulty(level) {
+            difficulty = level;
+            
+            // Actualizar estilos de botones
+            easyButton.classList.remove('selected');
+            mediumButton.classList.remove('selected');
+            hardButton.classList.remove('selected');
+            
+            if (level === 'easy') {
+                easyButton.classList.add('selected');
+            } else if (level === 'medium') {
+                mediumButton.classList.add('selected');
+            } else if (level === 'hard') {
+                hardButton.classList.add('selected');
+            }
+        }
+        
         // Iniciar juego
         function startGame() {
             score = 0;
-            timer = 30;
+            
+            // Ajustar tiempo según dificultad
+            if (difficulty === 'easy') {
+                timer = 30;
+            } else if (difficulty === 'medium') {
+                timer = 25;
+            } else if (difficulty === 'hard') {
+                timer = 20;
+            }
+            
             scoreEl.textContent = '0';
-            timerEl.textContent = '30';
+            timerEl.textContent = timer;
             timerBarEl.style.width = '100%';
             generateProblem();
             timerInterval = setInterval(updateTimer, 1000);
@@ -255,8 +341,18 @@
             timer--;
             timerEl.textContent = timer;
             
+            // Obtener el tiempo máximo según la dificultad
+            let maxTime;
+            if (difficulty === 'easy') {
+                maxTime = 30;
+            } else if (difficulty === 'medium') {
+                maxTime = 25;
+            } else {
+                maxTime = 20;
+            }
+            
             // Actualizar barra de tiempo
-            const timerPercentage = (timer / 30) * 100;
+            const timerPercentage = (timer / maxTime) * 100;
             timerBarEl.style.width = timerPercentage + '%';
             
             if (timer <= 0) {
@@ -267,12 +363,24 @@
         
         // Generar problema
         function generateProblem() {
-            // Generar números aleatorios (dificultad incrementada ligeramente)
-            const num1 = Math.floor(Math.random() * 20) + 1;
-            const num2 = Math.floor(Math.random() * 20) + 1;
+            let num1, num2, operations;
             
-            // Elegir operación
-            const operations = ['+', '-', '×'];
+            // Configurar según dificultad
+            if (difficulty === 'easy') {
+                num1 = Math.floor(Math.random() * 10) + 1; // 1-10
+                num2 = Math.floor(Math.random() * 10) + 1;
+                operations = ['+', '-'];
+            } else if (difficulty === 'medium') {
+                num1 = Math.floor(Math.random() * 20) + 1; // 1-20
+                num2 = Math.floor(Math.random() * 20) + 1;
+                operations = ['+', '-', '×'];
+            } else if (difficulty === 'hard') {
+                num1 = Math.floor(Math.random() * 30) + 1; // 1-30
+                num2 = Math.floor(Math.random() * 30) + 1;
+                operations = ['+', '-', '×', '÷'];
+            }
+            
+            // Elegir operación aleatoria
             const operation = operations[Math.floor(Math.random() * operations.length)];
             
             // Calcular resultado
@@ -280,18 +388,21 @@
             if (operation === '+') {
                 correctAnswer = num1 + num2;
             } else if (operation === '-') {
-                correctAnswer = Math.max(num1, num2) - Math.min(num1, num2);
+                // Asegurar que el resultado no sea negativo
+                if (num1 < num2) {
+                    [num1, num2] = [num2, num1]; // Intercambiar para evitar negativo
+                }
+                correctAnswer = num1 - num2;
             } else if (operation === '×') {
                 correctAnswer = num1 * num2;
+            } else if (operation === '÷') {
+                // Para división, aseguramos que sea exacta
+                correctAnswer = num2; // Guardamos el divisor como respuesta correcta
+                num1 = num2 * Math.floor(Math.random() * 10 + 1); // Multiplicamos para que la división sea exacta
             }
             
             // Crear texto del problema
-            let problemText;
-            if (operation === '-' && num1 < num2) {
-                problemText = `${num2} ${operation} ${num1}`;
-            } else {
-                problemText = `${num1} ${operation} ${num2}`;
-            }
+            let problemText = `${num1} ${operation} ${num2}`;
             
             // Generar opciones (16 en total - 4x4 grid)
             const options = [correctAnswer];
@@ -305,7 +416,8 @@
                     randomOption = correctAnswer + randomOffset;
                 } else {
                     // Completamente aleatorio
-                    randomOption = Math.floor(Math.random() * 100) + 1;
+                    let maxRandom = correctAnswer * 2;
+                    randomOption = Math.floor(Math.random() * maxRandom) + 1;
                 }
                 
                 // Asegurar que sea positivo
@@ -367,7 +479,17 @@
             
             // Comprobar respuesta
             if (selectedAnswer === currentProblem.correctAnswer) {
-                score += 10;
+                // Puntaje base según dificultad
+                let basePoints;
+                if (difficulty === 'easy') {
+                    basePoints = 5;
+                } else if (difficulty === 'medium') {
+                    basePoints = 10;
+                } else {
+                    basePoints = 15;
+                }
+                
+                score += basePoints;
                 scoreEl.textContent = score;
             }
             
@@ -400,9 +522,10 @@
                     scores = [];
                 }
                 
-                // Añadir nueva puntuación
+                // Añadir nueva puntuación con dificultad
                 scores.push({
                     name: playerName,
+                    difficulty: difficulty,
                     score: score
                 });
                 
@@ -441,11 +564,22 @@
                 const nameCell = document.createElement('td');
                 nameCell.textContent = score.name;
                 
+                const difficultyCell = document.createElement('td');
+                // Convertir el código de dificultad a texto legible
+                let difficultyText = 'Fácil';
+                if (score.difficulty === 'medium') {
+                    difficultyText = 'Medio';
+                } else if (score.difficulty === 'hard') {
+                    difficultyText = 'Difícil';
+                }
+                difficultyCell.textContent = difficultyText;
+                
                 const scoreCell = document.createElement('td');
                 scoreCell.textContent = score.score;
                 
                 row.appendChild(posCell);
                 row.appendChild(nameCell);
+                row.appendChild(difficultyCell);
                 row.appendChild(scoreCell);
                 
                 if (score.name === playerName && score.score === parseInt(finalScoreEl.textContent)) {
