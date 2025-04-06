@@ -315,6 +315,13 @@
             <p>Modo: <span id="mode-result">Clásico</span></p>
             <p>Puntuación Final: <span id="final-score">0</span></p>
             <p>Preguntas Correctas: <span id="correct-count">0</span></p>
+            
+            <div class="feedback-container" style="background-color: #f8f9fa; border: 1px solid #ddd; border-radius: 5px; padding: 12px; margin: 15px 0; text-align: left;">
+                <h3 style="margin-top: 0; color: #4a6fa5;">Análisis de tu desempeño:</h3>
+                <p id="performance-feedback">Analizando tu partida...</p>
+                <p id="improvement-tips">Consejos para mejorar...</p>
+            </div>
+            
             <button onclick="window.location.reload()">Jugar de Nuevo</button>
         </div>
     </div>
@@ -342,8 +349,18 @@
         var gameMode = 'classic';
         var difficulty = 'easy';
         var correctCount = 0;
+        var incorrectCount = 0;
         var timerInterval;
         var progressInterval;
+        
+        // Variables para análisis de desempeño
+        var operationStats = {
+            '+': { correct: 0, incorrect: 0 },
+            '-': { correct: 0, incorrect: 0 },
+            '*': { correct: 0, incorrect: 0 },
+            '/': { correct: 0, incorrect: 0 }
+        };
+        var currentOperation = '';
         
         // Funciones para seleccionar opciones
         function selectMode(mode) {
@@ -375,6 +392,14 @@
             // Configurar según modo
             score = 0;
             correctCount = 0;
+            incorrectCount = 0;
+            // Reiniciar estadísticas de operaciones
+            operationStats = {
+                '+': { correct: 0, incorrect: 0 },
+                '-': { correct: 0, incorrect: 0 },
+                '*': { correct: 0, incorrect: 0 },
+                '/': { correct: 0, incorrect: 0 }
+            };
             document.getElementById('score-display').textContent = '0';
             
             if (gameMode === 'classic') {
@@ -447,10 +472,10 @@
             
             if (difficulty === 'easy') {
                 min = 1; max = 10;
-                operations = ['+', '-'];
+                operations = ['+', '-', '*', '/']; // Todas las operaciones en todos los niveles
             } else if (difficulty === 'medium') {
                 min = -15; max = 20; // Incluir algunos números negativos en nivel medio
-                operations = ['+', '-', '*'];
+                operations = ['+', '-', '*', '/'];
             } else {
                 min = -25; max = 30; // Más números negativos en nivel difícil
                 operations = ['+', '-', '*', '/'];
@@ -471,6 +496,7 @@
             if (op === '+') {
                 correctAnswer = num1 + num2;
                 problemText = formatNumber(num1) + ' + ' + formatNumber(num2);
+                currentOperation = '+';
             } else if (op === '-') {
                 // Para nivel fácil, asegurarse que el resultado no sea negativo
                 if (difficulty === 'easy' && num1 < num2) {
@@ -480,10 +506,12 @@
                 }
                 correctAnswer = num1 - num2;
                 problemText = formatNumber(num1) + ' - ' + formatNumber(num2);
+                currentOperation = '-';
             } else if (op === '*') {
                 // Aplicar ley de signos para multiplicación
                 correctAnswer = num1 * num2;
                 problemText = formatNumber(num1) + ' × ' + formatNumber(num2);
+                currentOperation = '*';
             } else {
                 // Para la división, asegurarse que num2 no sea cero
                 while (num2 === 0) {
@@ -509,6 +537,7 @@
                 }
                 
                 problemText = formatNumber(num1) + ' ÷ ' + formatNumber(num2);
+                currentOperation = '/';
             }
             
             document.getElementById('problem-display').innerHTML = problemText;
@@ -569,8 +598,9 @@
                 options[i].onclick = null;
             }
             
-            // Actualizar puntuación si es correcto
+            // Actualizar estadísticas de operaciones
             if (selected === correct) {
+                operationStats[currentOperation].correct++;
                 var points = (difficulty === 'easy') ? 5 : (difficulty === 'medium') ? 10 : 15;
                 score += points;
                 correctCount++;
@@ -582,6 +612,9 @@
                     timer += bonusTime;
                     document.getElementById('timer-display').textContent = timer;
                 }
+            } else {
+                operationStats[currentOperation].incorrect++;
+                incorrectCount++;
             }
             
             // Generar siguiente problema después de 1 segundo
@@ -604,11 +637,91 @@
             document.getElementById('final-score').textContent = score;
             document.getElementById('correct-count').textContent = correctCount;
             
+            // Generar análisis de desempeño
+            generatePerformanceFeedback();
+            
             document.getElementById('game-screen').style.display = 'none';
             document.getElementById('results').style.display = 'block';
             
             // Guardar puntuación
             saveScore();
+        }
+        
+        // Función para generar retroalimentación de desempeño
+        function generatePerformanceFeedback() {
+            var totalQuestions = correctCount + incorrectCount;
+            var accuracy = totalQuestions > 0 ? (correctCount / totalQuestions) * 100 : 0;
+            
+            // Verificar qué operaciones son más difíciles para el jugador
+            var weakestOp = '+';
+            var weakestAccuracy = 100;
+            
+            for (var op in operationStats) {
+                var opTotal = operationStats[op].correct + operationStats[op].incorrect;
+                if (opTotal > 0) {
+                    var opAccuracy = (operationStats[op].correct / opTotal) * 100;
+                    if (opAccuracy < weakestAccuracy) {
+                        weakestAccuracy = opAccuracy;
+                        weakestOp = op;
+                    }
+                }
+            }
+            
+            // Símbolos más amigables para las operaciones
+            var opSymbols = {
+                '+': 'sumas',
+                '-': 'restas',
+                '*': 'multiplicaciones',
+                '/': 'divisiones'
+            };
+            
+            // Generar mensaje de desempeño
+            var performanceMessage = '';
+            
+            if (accuracy >= 90) {
+                performanceMessage = '¡Excelente trabajo! Has respondido correctamente el ' + Math.round(accuracy) + '% de las preguntas.';
+            } else if (accuracy >= 70) {
+                performanceMessage = 'Buen trabajo. Has respondido correctamente el ' + Math.round(accuracy) + '% de las preguntas.';
+            } else if (accuracy >= 50) {
+                performanceMessage = 'Vas por buen camino. Has respondido correctamente el ' + Math.round(accuracy) + '% de las preguntas.';
+            } else {
+                performanceMessage = 'Sigue practicando. Has respondido correctamente el ' + Math.round(accuracy) + '% de las preguntas.';
+            }
+            
+            // Generar consejos de mejora
+            var tipsMessage = '';
+            
+            // Identificar la operación más débil
+            if (totalQuestions > 0) {
+                tipsMessage += 'Tu área de mejora: <strong>' + opSymbols[weakestOp] + '</strong>. ';
+                
+                switch (weakestOp) {
+                    case '+':
+                        tipsMessage += 'Intenta sumar mentalmente y practica sumas pequeñas a diario.';
+                        break;
+                    case '-':
+                        tipsMessage += 'Para restas difíciles, recuerda que puedes convertirlas en la suma del número opuesto.';
+                        break;
+                    case '*':
+                        tipsMessage += 'Intenta memorizar las tablas de multiplicar hasta el 12. Para números negativos, recuerda: signos iguales dan resultado positivo, signos diferentes dan resultado negativo.';
+                        break;
+                    case '/':
+                        tipsMessage += 'Practica divisiones simples y recuerda que dividir es como encontrar cuántas veces cabe un número en otro.';
+                        break;
+                }
+            } else {
+                tipsMessage += 'Intenta responder más preguntas para obtener un análisis personalizado.';
+            }
+            
+            // Consejos basados en la dificultad
+            if (difficulty === 'easy' && accuracy > 80) {
+                tipsMessage += ' ¡Estás listo para probar el nivel medio!';
+            } else if (difficulty === 'medium' && accuracy > 80) {
+                tipsMessage += ' ¡Estás listo para probar el nivel difícil!';
+            }
+            
+            document.getElementById('performance-feedback').innerHTML = performanceMessage;
+            document.getElementById('improvement-tips').innerHTML = tipsMessage;
         }
         
         // Guardar puntuación
