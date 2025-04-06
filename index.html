@@ -59,7 +59,8 @@
         
         .options {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
             gap: 10px;
             margin: 20px 0;
         }
@@ -94,6 +95,44 @@
             border-radius: 5px;
             margin-bottom: 20px;
         }
+        
+        /* Barra de tiempo */
+        .timer-bar-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            height: 10px;
+        }
+        
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background-color: #e74c3c;
+            border-radius: 5px;
+            transition: width 1s linear;
+        }
+        
+        /* Tabla de clasificación */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
@@ -114,6 +153,11 @@
                 <div>Tiempo: <span id="timer">30</span>s</div>
             </div>
             
+            <!-- Barra de tiempo -->
+            <div class="timer-bar-container">
+                <div class="timer-bar" id="timerBar"></div>
+            </div>
+            
             <div class="problem" id="problem"></div>
             
             <div class="options" id="options">
@@ -128,6 +172,21 @@
         </div>
     </div>
     
+    <!-- Tabla de Clasificación -->
+    <div class="container">
+        <h2>Tabla de Clasificación</h2>
+        <table>
+            <tr>
+                <th>Posición</th>
+                <th>Jugador</th>
+                <th>Puntuación</th>
+            </tr>
+            <tbody id="leaderboard">
+                <!-- Puntuaciones generadas dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+    
     <script>
         // Variables
         let playerName = "";
@@ -135,6 +194,7 @@
         let timer = 30;
         let timerInterval;
         let currentProblem = {};
+        let highScores = [];
         
         // Elementos DOM
         const loginScreen = document.getElementById('loginScreen');
@@ -144,11 +204,13 @@
         const playerNameEl = document.getElementById('playerName');
         const scoreEl = document.getElementById('score');
         const timerEl = document.getElementById('timer');
+        const timerBarEl = document.getElementById('timerBar');
         const problemEl = document.getElementById('problem');
         const optionsEl = document.getElementById('options');
         const resultsEl = document.getElementById('results');
         const finalScoreEl = document.getElementById('finalScore');
         const restartButton = document.getElementById('restartButton');
+        const leaderboardEl = document.getElementById('leaderboard');
         
         // Evento de inicio
         startButton.onclick = function() {
@@ -164,6 +226,13 @@
             }
         };
         
+        // Enter key para nombre
+        nameInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                startButton.click();
+            }
+        });
+        
         // Reiniciar juego
         restartButton.onclick = function() {
             resultsEl.style.display = 'none';
@@ -176,6 +245,7 @@
             timer = 30;
             scoreEl.textContent = '0';
             timerEl.textContent = '30';
+            timerBarEl.style.width = '100%';
             generateProblem();
             timerInterval = setInterval(updateTimer, 1000);
         }
@@ -185,6 +255,10 @@
             timer--;
             timerEl.textContent = timer;
             
+            // Actualizar barra de tiempo
+            const timerPercentage = (timer / 30) * 100;
+            timerBarEl.style.width = timerPercentage + '%';
+            
             if (timer <= 0) {
                 clearInterval(timerInterval);
                 showResults();
@@ -193,9 +267,9 @@
         
         // Generar problema
         function generateProblem() {
-            // Generar números aleatorios
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
+            // Generar números aleatorios (dificultad incrementada ligeramente)
+            const num1 = Math.floor(Math.random() * 20) + 1;
+            const num2 = Math.floor(Math.random() * 20) + 1;
             
             // Elegir operación
             const operations = ['+', '-', '×'];
@@ -219,10 +293,25 @@
                 problemText = `${num1} ${operation} ${num2}`;
             }
             
-            // Generar opciones
+            // Generar opciones (16 en total - 4x4 grid)
             const options = [correctAnswer];
-            while (options.length < 4) {
-                const randomOption = Math.floor(Math.random() * 50) + 1;
+            while (options.length < 16) {
+                // Opciones con valores cercanos al correcto para aumentar dificultad
+                let randomOffset = Math.floor(Math.random() * 10) - 5; // -5 a +5
+                let randomOption;
+                
+                if (Math.random() > 0.7) {
+                    // Cerca del correcto para confundir
+                    randomOption = correctAnswer + randomOffset;
+                } else {
+                    // Completamente aleatorio
+                    randomOption = Math.floor(Math.random() * 100) + 1;
+                }
+                
+                // Asegurar que sea positivo
+                randomOption = Math.max(1, randomOption);
+                
+                // Añadir si no está ya en las opciones
                 if (!options.includes(randomOption)) {
                     options.push(randomOption);
                 }
@@ -292,6 +381,90 @@
         function showResults() {
             finalScoreEl.textContent = score;
             resultsEl.style.display = 'block';
+            
+            // Guardar puntuación
+            saveScore();
+        }
+        
+        // Guardar puntuación
+        function saveScore() {
+            try {
+                // Obtener puntuaciones guardadas
+                let scores = [];
+                try {
+                    const savedScores = localStorage.getItem('mathScores');
+                    if (savedScores) {
+                        scores = JSON.parse(savedScores);
+                    }
+                } catch (e) {
+                    scores = [];
+                }
+                
+                // Añadir nueva puntuación
+                scores.push({
+                    name: playerName,
+                    score: score
+                });
+                
+                // Ordenar por puntuación
+                scores.sort((a, b) => b.score - a.score);
+                
+                // Guardar solo las 10 mejores
+                highScores = scores.slice(0, 10);
+                
+                // Guardar en localStorage
+                try {
+                    localStorage.setItem('mathScores', JSON.stringify(highScores));
+                } catch (e) {
+                    console.log('Error guardando puntuaciones');
+                }
+                
+                // Actualizar tabla
+                updateLeaderboard();
+            } catch (e) {
+                console.log('Error en saveScore', e);
+            }
+        }
+        
+        // Actualizar tabla de clasificación
+        function updateLeaderboard() {
+            // Limpiar tabla
+            leaderboardEl.innerHTML = '';
+            
+            // Añadir filas
+            highScores.forEach((score, index) => {
+                const row = document.createElement('tr');
+                
+                const posCell = document.createElement('td');
+                posCell.textContent = index + 1;
+                
+                const nameCell = document.createElement('td');
+                nameCell.textContent = score.name;
+                
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = score.score;
+                
+                row.appendChild(posCell);
+                row.appendChild(nameCell);
+                row.appendChild(scoreCell);
+                
+                if (score.name === playerName && score.score === parseInt(finalScoreEl.textContent)) {
+                    row.style.backgroundColor = '#ffe6a8';
+                }
+                
+                leaderboardEl.appendChild(row);
+            });
+        }
+        
+        // Cargar puntuaciones al inicio
+        try {
+            const savedScores = localStorage.getItem('mathScores');
+            if (savedScores) {
+                highScores = JSON.parse(savedScores);
+                updateLeaderboard();
+            }
+        } catch (e) {
+            console.log('Error cargando puntuaciones');
         }
     </script>
 </body>
