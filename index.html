@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathChallenge - Juego de Matemáticas</title>
+    <title>MathChallenge</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -25,46 +25,13 @@
             max-width: 600px;
             padding: 20px;
             margin-top: 30px;
-        }
-        
-        header {
-            text-align: center;
             margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
         
         h1 {
             color: #4a6fa5;
-            margin: 0;
-        }
-        
-        .player-info {
-            display: flex;
-            align-items: center;
-            margin-top: 10px;
-            background-color: #e0e8f5;
-            padding: 8px 15px;
-            border-radius: 20px;
-        }
-        
-        .player-avatar {
-            width: 30px;
-            height: 30px;
-            background-color: #4a6fa5;
-            border-radius: 50%;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-        
-        .player-name {
-            font-weight: bold;
-            color: #4a6fa5;
+            text-align: center;
+            margin-top: 0;
         }
         
         .status-bar {
@@ -112,15 +79,6 @@
             transform: scale(1.05);
         }
         
-        .option-button:active {
-            transform: scale(0.98);
-        }
-        
-        .option-button.selected {
-            background-color: #4a6fa5;
-            color: white;
-        }
-        
         .option-button.correct {
             background-color: #4caf50;
             color: white;
@@ -140,14 +98,6 @@
             transition: width 0.1s linear;
         }
         
-        .controls {
-            display: flex;
-            margin-top: 20px;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
         .button {
             padding: 10px 20px;
             background-color: #4a6fa5;
@@ -156,7 +106,6 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.2s;
         }
         
         .button:hover {
@@ -169,31 +118,34 @@
             display: none;
         }
         
-        .results h2 {
-            color: #4a6fa5;
-        }
-        
-        .stat {
-            font-size: 18px;
-            margin: 5px 0;
-        }
-        
-        .ranking {
-            margin-top: 20px;
-            width: 90%;
-            max-width: 600px;
-            margin-bottom: 30px;
-        }
-        
-        .ranking h2 {
-            color: #4a6fa5;
+        .player-form {
+            margin-bottom: 20px;
             text-align: center;
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background-color: #e0e8f5;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .player-input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 200px;
+            margin-right: 10px;
         }
         
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 20px;
         }
         
         th, td {
@@ -215,136 +167,55 @@
             background-color: #ffe6a8 !important;
         }
         
-        .player-form {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .player-input {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            width: 200px;
-            margin-right: 10px;
-        }
-        
-        .error-message {
-            color: #f44336;
-            font-size: 14px;
-            margin-top: 8px;
-            text-align: center;
-            display: none;
-        }
-        
-        .game-modes {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .mode-selector {
-            display: flex;
-            margin-bottom: 20px;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .mode-button {
-            padding: 8px 16px;
-            background-color: #e0e8f5;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-        }
-        
-        .mode-button.selected {
-            background-color: #4a6fa5;
-            color: white;
-        }
-        
         .footer {
-            margin-top: 20px;
-            margin-bottom: 20px;
             text-align: center;
             color: #666;
             font-size: 14px;
-            width: 90%;
-            max-width: 600px;
-        }
-        
-        @media (max-width: 480px) {
-            .options-grid {
-                grid-template-columns: repeat(4, 1fr);
-                grid-template-rows: repeat(4, 1fr);
-                gap: 5px;
-            }
-            
-            .option-button {
-                padding: 10px 5px;
-                font-size: 16px;
-            }
-            
-            .problem-container {
-                font-size: 28px;
-            }
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>MathChallenge</h1>
-            <div class="player-info" id="player-display" style="display: none;">
-                <div class="player-avatar" id="player-avatar"></div>
-                <div class="player-name" id="player-name-display"></div>
-            </div>
-        </header>
+        <h1>MathChallenge</h1>
         
-        <div id="player-form" class="player-form">
-            <input type="text" id="player-name-input" class="player-input" placeholder="Tu nombre de jugador">
-            <button class="button" id="save-name-button">Guardar</button>
-            <div id="error-message" class="error-message">Por favor ingresa un nombre válido</div>
-        </div>
-        
-        <div id="game-modes" class="game-modes" style="display: none;">
-            <h3>Elige el modo de juego:</h3>
-            <div class="mode-selector">
-                <button id="mode-free" class="mode-button selected">Modo Libre</button>
-                <button id="mode-challenge" class="mode-button">Modo Desafío</button>
+        <!-- Formulario de nombre -->
+        <div id="loginScreen">
+            <div class="player-form">
+                <input type="text" id="playerNameInput" class="player-input" placeholder="Tu nombre de jugador">
+                <button class="button" id="saveNameButton">Guardar</button>
             </div>
         </div>
         
-        <div class="status-bar">
-            <div id="score">Puntos: 0</div>
-            <div id="timer">30 s</div>
-        </div>
-        
-        <div id="question-container">
+        <!-- Pantalla de juego -->
+        <div id="gameScreen" style="display: none;">
+            <div class="player-info">
+                Jugador: <span id="playerNameDisplay" style="font-weight: bold; margin-left: 5px;"></span>
+            </div>
+            
+            <div class="status-bar">
+                <div id="score">Puntos: 0</div>
+                <div id="timer">30 s</div>
+            </div>
+            
             <div class="problem-container" id="problem"></div>
-            <div class="options-grid" id="options">
-                <!-- Opciones generadas dinámicamente -->
+            <div class="options-grid" id="options"></div>
+            
+            <div class="timer-bar" id="timerBar"></div>
+            
+            <div class="results" id="results">
+                <h2>¡Fin del Juego!</h2>
+                <p>Puntuación Final: <span id="finalScore">0</span></p>
+                <p>Preguntas Correctas: <span id="correctCount">0</span></p>
+                <p>Tiempo Promedio: <span id="avgTime">0</span> segundos</p>
+                <button class="button" id="restartButton">Jugar de Nuevo</button>
             </div>
-        </div>
-        
-        <div class="timer-bar" id="timer-bar"></div>
-        
-        <div class="controls">
-            <button class="button" id="start-button" style="display: none;">¡Comenzar Juego!</button>
-        </div>
-        
-        <div class="results" id="results">
-            <h2>¡Fin del Juego!</h2>
-            <div class="stat">Puntuación Final: <span id="final-score">0</span></div>
-            <div class="stat">Preguntas Correctas: <span id="correct-count">0</span></div>
-            <div class="stat">Tiempo Promedio: <span id="avg-time">0</span> segundos</div>
-            <button class="button" id="restart-button" style="margin-top: 15px;">Jugar de Nuevo</button>
         </div>
     </div>
     
-    <div class="ranking">
-        <h2>Tabla de Clasificación</h2>
+    <!-- Tabla de Clasificación -->
+    <div class="container">
+        <h1>Tabla de Clasificación</h1>
         <table id="leaderboard">
             <tr>
                 <th>Posición</th>
@@ -352,7 +223,7 @@
                 <th>Puntuación</th>
                 <th>Tiempo</th>
             </tr>
-            <!-- Las filas se generan dinámicamente -->
+            <!-- Filas generadas dinámicamente -->
         </table>
     </div>
     
@@ -362,88 +233,90 @@
     </div>
 
     <script>
-        // Variables globales
-        let currentProblem = {};
-        let score = 0;
-        let timer = 30;
-        let timerInterval;
-        let gameActive = false;
-        let problems = [];
-        let correctAnswers = 0;
-        let totalTime = 0;
-        let questionStartTime = 0;
-        let playerName = "";
-        let gameMode = "free"; // "free" o "challenge"
-        
-        // Referencias DOM - Una vez que el DOM está cargado
+        // Esperar a que el DOM esté completamente cargado
         document.addEventListener('DOMContentLoaded', function() {
-            // Obtener referencias a elementos del DOM
+            console.log("DOM cargado completamente");
+            
+            // Variables globales
+            let playerName = "";
+            let score = 0;
+            let timer = 30;
+            let timerInterval;
+            let gameActive = false;
+            let problems = [];
+            let correctAnswers = 0;
+            let totalTime = 0;
+            let questionStartTime = 0;
+            let currentProblem = {};
+            
+            // Referencias DOM
+            const loginScreen = document.getElementById('loginScreen');
+            const gameScreen = document.getElementById('gameScreen');
+            const playerNameInput = document.getElementById('playerNameInput');
+            const saveNameButton = document.getElementById('saveNameButton');
+            const playerNameDisplay = document.getElementById('playerNameDisplay');
             const problemEl = document.getElementById('problem');
             const optionsEl = document.getElementById('options');
             const scoreEl = document.getElementById('score');
             const timerEl = document.getElementById('timer');
-            const timerBarEl = document.getElementById('timer-bar');
-            const startButton = document.getElementById('start-button');
+            const timerBarEl = document.getElementById('timerBar');
             const resultsEl = document.getElementById('results');
-            const finalScoreEl = document.getElementById('final-score');
-            const correctCountEl = document.getElementById('correct-count');
-            const avgTimeEl = document.getElementById('avg-time');
-            const restartButton = document.getElementById('restart-button');
-            const playerFormEl = document.getElementById('player-form');
-            const playerNameInput = document.getElementById('player-name-input');
-            const saveNameButton = document.getElementById('save-name-button');
-            const playerDisplayEl = document.getElementById('player-display');
-            const playerNameDisplayEl = document.getElementById('player-name-display');
-            const playerAvatarEl = document.getElementById('player-avatar');
-            const errorMessageEl = document.getElementById('error-message');
-            const gameModesEl = document.getElementById('game-modes');
-            const modeButtonFree = document.getElementById('mode-free');
-            const modeButtonChallenge = document.getElementById('mode-challenge');
+            const finalScoreEl = document.getElementById('finalScore');
+            const correctCountEl = document.getElementById('correctCount');
+            const avgTimeEl = document.getElementById('avgTime');
+            const restartButton = document.getElementById('restartButton');
             
-            // Event listeners básicos
+            // Guardar nombre de jugador
             saveNameButton.addEventListener('click', function() {
+                console.log("Botón Guardar clickeado");
                 const name = playerNameInput.value.trim();
                 
-                if (!name) {
-                    errorMessageEl.style.display = 'block';
-                    return;
+                if (name) {
+                    playerName = name;
+                    playerNameDisplay.textContent = name;
+                    
+                    try {
+                        localStorage.setItem('mathGamePlayerName', name);
+                    } catch (error) {
+                        console.error("Error al guardar en localStorage:", error);
+                    }
+                    
+                    // Cambiar pantallas
+                    loginScreen.style.display = 'none';
+                    gameScreen.style.display = 'block';
+                    
+                    // Iniciar juego
+                    startGame();
+                } else {
+                    alert("Por favor ingresa un nombre válido");
                 }
-                
-                errorMessageEl.style.display = 'none';
-                playerName = name;
-                
-                try {
-                    localStorage.setItem('mathGamePlayerName', name);
-                } catch (error) {
-                    console.error("Error al guardar en localStorage:", error);
-                }
-                
-                playerFormEl.style.display = 'none';
-                playerDisplayEl.style.display = 'flex';
-                playerNameDisplayEl.textContent = playerName;
-                
-                const initial = playerName.charAt(0).toUpperCase();
-                playerAvatarEl.textContent = initial || '👤';
-                
-                startButton.style.display = 'block';
-                gameModesEl.style.display = 'block';
             });
             
-            // Evento de tecla Enter en input del nombre
-            playerNameInput.addEventListener('keypress', function(event) {
-                if (event.key === 'Enter') {
+            // Evento Enter para el nombre
+            playerNameInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
                     saveNameButton.click();
                 }
             });
             
-            startButton.addEventListener('click', function() {
-                // Verificar que haya un nombre de jugador
-                if (!playerName) {
-                    errorMessageEl.textContent = 'Por favor, ingresa tu nombre antes de comenzar';
-                    errorMessageEl.style.display = 'block';
-                    return;
+            // Reiniciar juego
+            restartButton.addEventListener('click', function() {
+                startGame();
+            });
+            
+            // Verificar si hay nombre guardado
+            try {
+                const savedName = localStorage.getItem('mathGamePlayerName');
+                if (savedName && savedName.trim() !== '') {
+                    playerNameInput.value = savedName;
                 }
-                
+            } catch (error) {
+                console.error("Error al acceder a localStorage:", error);
+            }
+            
+            // Iniciar juego
+            function startGame() {
+                console.log("Juego iniciado");
                 // Resetear variables
                 score = 0;
                 timer = 30;
@@ -457,109 +330,26 @@
                 timerEl.textContent = `${timer} s`;
                 timerBarEl.style.width = '100%';
                 resultsEl.style.display = 'none';
-                startButton.style.display = 'none';
-                gameModesEl.style.display = 'none';
                 
                 // Generar primer problema
                 generateProblem();
                 
                 // Iniciar temporizador
                 timerInterval = setInterval(updateTimer, 1000);
-            });
-            
-            restartButton.addEventListener('click', function() {
-                startButton.click();
-            });
-            
-            // Event listeners para modos de juego
-            modeButtonFree.addEventListener('click', function() {
-                setGameMode('free');
-            });
-            
-            modeButtonChallenge.addEventListener('click', function() {
-                setGameMode('challenge');
-            });
-            
-            // Comprobar si ya hay un nombre guardado
-            checkSavedName();
-            
-            // Cargar puntuaciones guardadas
-            loadScores();
-            
-            // Configuración de dificultad
-            const DIFFICULTY = {
-                EASY: { min: 1, max: 10, operations: ['+', '-'] },
-                MEDIUM: { min: 5, max: 20, operations: ['+', '-', '*'] },
-                HARD: { min: 10, max: 50, operations: ['+', '-', '*', '/'] }
-            };
-            
-            // Cambiar modo de juego
-            function setGameMode(mode) {
-                gameMode = mode;
-                if (mode === 'free') {
-                    modeButtonFree.classList.add('selected');
-                    modeButtonChallenge.classList.remove('selected');
-                } else {
-                    modeButtonFree.classList.remove('selected');
-                    modeButtonChallenge.classList.add('selected');
-                }
             }
             
-            // Comprobar si hay un nombre guardado
-            function checkSavedName() {
-                try {
-                    const savedName = localStorage.getItem('mathGamePlayerName');
-                    if (savedName && savedName.trim() !== '') {
-                        playerName = savedName;
-                        playerNameInput.value = savedName;
-                        
-                        playerFormEl.style.display = 'none';
-                        playerDisplayEl.style.display = 'flex';
-                        playerNameDisplayEl.textContent = playerName;
-                        
-                        const initial = playerName.charAt(0).toUpperCase();
-                        playerAvatarEl.textContent = initial || '👤';
-                        
-                        startButton.style.display = 'block';
-                        gameModesEl.style.display = 'block';
-                    }
-                } catch (error) {
-                    console.error("Error al acceder al localStorage:", error);
-                }
-            }
-            
-            // Actualizar temporizador
-            function updateTimer() {
-                timer--;
-                
-                // Actualizar UI
-                timerEl.textContent = `${timer} s`;
-                timerBarEl.style.width = `${(timer / 30) * 100}%`;
-                
-                // Comprobar fin del tiempo
-                if (timer <= 0) {
-                    endGame();
-                }
-            }
-            
-            // Generar problema matemático
+            // Generar problema
             function generateProblem() {
-                // Seleccionar dificultad basada en la puntuación
-                let difficulty;
-                if (score < 50) {
-                    difficulty = DIFFICULTY.EASY;
-                } else if (score < 100) {
-                    difficulty = DIFFICULTY.MEDIUM;
-                } else {
-                    difficulty = DIFFICULTY.HARD;
-                }
+                console.log("Generando problema");
+                // Generar números aleatorios entre 1 y 20
+                const num1 = Math.floor(Math.random() * 20) + 1;
+                const num2 = Math.floor(Math.random() * 20) + 1;
                 
-                // Generar operación
-                const num1 = randomInt(difficulty.min, difficulty.max);
-                const num2 = randomInt(difficulty.min, difficulty.max);
-                const operation = difficulty.operations[randomInt(0, difficulty.operations.length - 1)];
+                // Elegir operación aleatoria
+                const operations = ['+', '-', '*'];
+                const operation = operations[Math.floor(Math.random() * operations.length)];
                 
-                // Cálculo del resultado correcto
+                // Calcular resultado
                 let correctResult;
                 let problemText;
                 
@@ -570,70 +360,36 @@
                         break;
                     case '-':
                         // Asegurar que el resultado no sea negativo
-                        if (num1 < num2) {
-                            correctResult = num2 - num1;
-                            problemText = `${num2} - ${num1}`;
-                        } else {
+                        if (num1 >= num2) {
                             correctResult = num1 - num2;
                             problemText = `${num1} - ${num2}`;
+                        } else {
+                            correctResult = num2 - num1;
+                            problemText = `${num2} - ${num1}`;
                         }
                         break;
                     case '*':
                         correctResult = num1 * num2;
                         problemText = `${num1} × ${num2}`;
                         break;
-                    case '/':
-                        // Asegurar división exacta
-                        correctResult = num1;
-                        problemText = `${num1 * num2} ÷ ${num2}`;
-                        break;
                 }
                 
-                // Generar opciones para la cuadrícula (una correcta y el resto incorrectas)
-                const gridSize = 16; // 4x4 grid
+                // Generar opciones (una correcta y 15 incorrectas)
                 const options = [correctResult];
                 
-                // Rango para números de distracción
-                const minOption = Math.max(1, correctResult - 20);
-                const maxOption = correctResult + 20;
-                
-                // Contador para evitar bucles infinitos
-                let attempts = 0;
-                
-                while (options.length < gridSize && attempts < 100) {
-                    attempts++;
-                    
-                    // Generar opción incorrecta
-                    let incorrectOption;
-                    
-                    // 50% cerca del resultado, 50% más aleatorio
-                    if (Math.random() > 0.5) {
-                        // Opción cercana
-                        const offset = randomInt(1, 5);
-                        incorrectOption = correctResult + (Math.random() > 0.5 ? offset : -offset);
-                    } else {
-                        // Opción más aleatoria dentro del rango
-                        incorrectOption = randomInt(minOption, maxOption);
-                    }
+                while (options.length < 16) {
+                    // Generar un número aleatorio para opción incorrecta
+                    const randomOption = Math.floor(Math.random() * 100) + 1;
                     
                     // Añadir si no está ya en las opciones
-                    if (!options.includes(incorrectOption) && incorrectOption >= 0) {
-                        options.push(incorrectOption);
-                    }
-                }
-                
-                // Si no conseguimos llenar la cuadrícula, completar con números aleatorios
-                while (options.length < gridSize) {
-                    const randomNum = randomInt(1, 100);
-                    if (!options.includes(randomNum)) {
-                        options.push(randomNum);
+                    if (!options.includes(randomOption)) {
+                        options.push(randomOption);
                     }
                 }
                 
                 // Mezclar opciones
                 shuffleArray(options);
                 
-                // Guardar problema actual
                 currentProblem = {
                     text: problemText,
                     options: options,
@@ -656,14 +412,16 @@
                     const button = document.createElement('button');
                     button.className = 'option-button';
                     button.textContent = option;
-                    button.addEventListener('click', function() {
+                    
+                    button.onclick = function() {
                         checkAnswer(option);
-                    });
+                    };
+                    
                     optionsEl.appendChild(button);
                 });
             }
             
-            // Comprobar respuesta
+            // Verificar respuesta
             function checkAnswer(selectedAnswer) {
                 if (!gameActive) return;
                 
@@ -710,6 +468,20 @@
                 }, 1000);
             }
             
+            // Actualizar temporizador
+            function updateTimer() {
+                timer--;
+                
+                // Actualizar UI
+                timerEl.textContent = `${timer} s`;
+                timerBarEl.style.width = `${(timer / 30) * 100}%`;
+                
+                // Comprobar fin del tiempo
+                if (timer <= 0) {
+                    endGame();
+                }
+            }
+            
             // Finalizar juego
             function endGame() {
                 gameActive = false;
@@ -721,29 +493,25 @@
                 avgTimeEl.textContent = problems.length > 0 ? (totalTime / problems.length).toFixed(1) : '0';
                 
                 resultsEl.style.display = 'block';
-                startButton.style.display = 'block';
-                gameModesEl.style.display = 'block';
                 
-                // Guardar puntuación localmente
+                // Guardar puntuación
                 saveScore(score, totalTime / problems.length);
             }
             
-            // Guardar puntuación (simulado)
+            // Guardar puntuación
             function saveScore(score, avgTime) {
                 try {
-                    // Obtener puntuaciones anteriores del almacenamiento local
+                    // Obtener puntuaciones anteriores
                     let scores = [];
                     const savedScores = localStorage.getItem('mathGameScores');
                     
                     if (savedScores) {
                         try {
                             scores = JSON.parse(savedScores);
-                            // Comprobar que sea un array
                             if (!Array.isArray(scores)) {
                                 scores = [];
                             }
                         } catch (e) {
-                            console.error("Error parsing scores:", e);
                             scores = [];
                         }
                     }
@@ -752,56 +520,23 @@
                     scores.push({
                         name: playerName,
                         score: score,
-                        time: avgTime,
-                        date: new Date().toISOString()
+                        time: avgTime
                     });
                     
-                    // Ordenar por puntuación (descendente) y luego por tiempo (ascendente)
-                    scores.sort((a, b) => {
-                        if (a.score !== b.score) {
-                            return b.score - a.score;
-                        }
-                        return a.time - b.time;
-                    });
+                    // Ordenar por puntuación
+                    scores.sort((a, b) => b.score - a.score);
                     
-                    // Limitar a 10 mejores puntuaciones
+                    // Limitar a 10 puntuaciones
                     scores = scores.slice(0, 10);
                     
-                    // Guardar en almacenamiento local
+                    // Guardar
                     localStorage.setItem('mathGameScores', JSON.stringify(scores));
                     
-                    // Actualizar tabla de clasificación
+                    // Actualizar tabla
                     updateLeaderboard(scores);
                 } catch (error) {
                     console.error("Error al guardar puntuación:", error);
-                    // Si hay error de localStorage, actualizar tabla de todas formas con puntuación actual
-                    updateLeaderboardWithCurrentScore(score, avgTime);
                 }
-            }
-            
-            // Actualizar tabla solo con puntuación actual (fallback)
-            function updateLeaderboardWithCurrentScore(score, avgTime) {
-                const leaderboard = document.getElementById('leaderboard');
-                
-                // Mantener solo la fila de cabecera
-                while (leaderboard.rows.length > 1) {
-                    leaderboard.deleteRow(1);
-                }
-                
-                // Añadir puntuación actual
-                const row = leaderboard.insertRow();
-                row.classList.add('highlight');
-                
-                // Añadir celdas
-                const posCell = row.insertCell(0);
-                const nameCell = row.insertCell(1);
-                const scoreCell = row.insertCell(2);
-                const timeCell = row.insertCell(3);
-                
-                posCell.textContent = 1;
-                nameCell.textContent = playerName;
-                scoreCell.textContent = score;
-                timeCell.textContent = `${avgTime.toFixed(1)}s`;
             }
             
             // Actualizar tabla de clasificación
@@ -820,11 +555,8 @@
                 scores.forEach((scoreItem, index) => {
                     const row = leaderboard.insertRow();
                     
-                    // Destacar jugador actual
-                    const isCurrent = scoreItem.name === playerName && 
-                                     scoreItem.date && 
-                                     new Date(scoreItem.date).getTime() > Date.now() - 60000; // Si se agregó en el último minuto
-                    if (isCurrent) {
+                    // Resaltar jugador actual
+                    if (scoreItem.name === playerName) {
                         row.classList.add('highlight');
                     }
                     
@@ -835,13 +567,13 @@
                     const timeCell = row.insertCell(3);
                     
                     posCell.textContent = index + 1;
-                    nameCell.textContent = scoreItem.name || 'Anónimo';
-                    scoreCell.textContent = scoreItem.score || 0;
-                    timeCell.textContent = scoreItem.time ? `${scoreItem.time.toFixed(1)}s` : '0s';
+                    nameCell.textContent = scoreItem.name;
+                    scoreCell.textContent = scoreItem.score;
+                    timeCell.textContent = `${scoreItem.time.toFixed(1)}s`;
                 });
             }
             
-            // Cargar puntuaciones guardadas al inicio
+            // Cargar puntuaciones guardadas
             function loadScores() {
                 try {
                     const savedScores = localStorage.getItem('mathGameScores');
@@ -855,18 +587,18 @@
                     console.error("Error al cargar puntuaciones:", error);
                 }
             }
-        });
-
-        // Utilidades (fuera del DOMContentLoaded)
-        function randomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-        
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
+            
+            // Utilidades
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
             }
-        }
+            
+            // Cargar puntuaciones al inicio
+            loadScores();
+        });
+    </script>
+</body>
+</html>
