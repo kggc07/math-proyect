@@ -3,174 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MathChallenge</title>
+    <title>MathChallenge - Básico</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
             background-color: #f0f2f5;
             margin: 0;
-            padding: 0;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            color: #333;
         }
         
         .container {
             background-color: white;
             border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             padding: 20px;
-            margin-top: 30px;
             margin-bottom: 20px;
+            max-width: 600px;
+            width: 90%;
         }
         
         h1 {
             color: #4a6fa5;
-            text-align: center;
-            margin-top: 0;
         }
         
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
+        input, button {
             padding: 10px;
-            background-color: #4a6fa5;
-            color: white;
+            margin: 10px;
             border-radius: 5px;
         }
         
-        .problem-container {
-            font-size: 32px;
-            text-align: center;
-            margin: 30px 0;
-            font-weight: bold;
-            min-height: 50px;
-        }
-        
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, 1fr);
-            gap: 8px;
-            margin-top: 20px;
-        }
-        
-        .option-button {
-            padding: 12px 5px;
-            font-size: 18px;
-            font-weight: bold;
-            border: none;
-            border-radius: 5px;
-            background-color: #e0e8f5;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .option-button:hover {
-            background-color: #d0dcf0;
-            transform: scale(1.05);
-        }
-        
-        .option-button.correct {
-            background-color: #4caf50;
-            color: white;
-        }
-        
-        .option-button.incorrect {
-            background-color: #f44336;
-            color: white;
-        }
-        
-        .timer-bar {
-            height: 10px;
-            background-color: #e74c3c;
-            width: 100%;
-            border-radius: 5px;
-            margin-top: 20px;
-            transition: width 0.1s linear;
-        }
-        
-        .button {
-            padding: 10px 20px;
+        button {
             background-color: #4a6fa5;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
         }
         
-        .button:hover {
+        button:hover {
             background-color: #3a5a8a;
         }
         
-        .results {
-            margin-top: 20px;
-            text-align: center;
+        #gameScreen {
             display: none;
         }
         
-        .player-form {
-            margin-bottom: 20px;
-            text-align: center;
+        .problem {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
         }
         
-        .player-info {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .option {
+            padding: 10px;
             background-color: #e0e8f5;
-            padding: 10px;
             border-radius: 5px;
+            cursor: pointer;
         }
         
-        .player-input {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            width: 200px;
-            margin-right: 10px;
+        .option:hover {
+            background-color: #d0dcf0;
         }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: #4a6fa5;
+        .correct {
+            background-color: #4caf50 !important;
             color: white;
         }
         
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
+        .incorrect {
+            background-color: #f44336 !important;
+            color: white;
         }
         
-        .highlight {
-            background-color: #ffe6a8 !important;
-        }
-        
-        .footer {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
+        .status {
+            display: flex;
+            justify-content: space-between;
+            background-color: #4a6fa5;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
             margin-bottom: 20px;
         }
     </style>
@@ -179,426 +100,199 @@
     <div class="container">
         <h1>MathChallenge</h1>
         
-        <!-- Formulario de nombre -->
+        <!-- Pantalla de Inicio -->
         <div id="loginScreen">
-            <div class="player-form">
-                <input type="text" id="playerNameInput" class="player-input" placeholder="Tu nombre de jugador">
-                <button class="button" id="saveNameButton">Guardar</button>
-            </div>
+            <input type="text" id="nameInput" placeholder="Tu nombre de jugador">
+            <button id="startButton">Comenzar Juego</button>
         </div>
         
-        <!-- Pantalla de juego -->
-        <div id="gameScreen" style="display: none;">
-            <div class="player-info">
-                Jugador: <span id="playerNameDisplay" style="font-weight: bold; margin-left: 5px;"></span>
+        <!-- Pantalla de Juego -->
+        <div id="gameScreen">
+            <div class="status">
+                <div>Jugador: <span id="playerName"></span></div>
+                <div>Puntos: <span id="score">0</span></div>
+                <div>Tiempo: <span id="timer">30</span>s</div>
             </div>
             
-            <div class="status-bar">
-                <div id="score">Puntos: 0</div>
-                <div id="timer">30 s</div>
+            <div class="problem" id="problem"></div>
+            
+            <div class="options" id="options">
+                <!-- Opciones generadas dinámicamente -->
             </div>
             
-            <div class="problem-container" id="problem"></div>
-            <div class="options-grid" id="options"></div>
-            
-            <div class="timer-bar" id="timerBar"></div>
-            
-            <div class="results" id="results">
+            <div id="results" style="display: none;">
                 <h2>¡Fin del Juego!</h2>
                 <p>Puntuación Final: <span id="finalScore">0</span></p>
-                <p>Preguntas Correctas: <span id="correctCount">0</span></p>
-                <p>Tiempo Promedio: <span id="avgTime">0</span> segundos</p>
-                <button class="button" id="restartButton">Jugar de Nuevo</button>
+                <button id="restartButton">Jugar de Nuevo</button>
             </div>
         </div>
     </div>
     
-    <!-- Tabla de Clasificación -->
-    <div class="container">
-        <h1>Tabla de Clasificación</h1>
-        <table id="leaderboard">
-            <tr>
-                <th>Posición</th>
-                <th>Jugador</th>
-                <th>Puntuación</th>
-                <th>Tiempo</th>
-            </tr>
-            <!-- Filas generadas dinámicamente -->
-        </table>
-    </div>
-    
-    <div class="footer">
-        <p>¿Te gustó el juego? ¡Compártelo con tus amigos!</p>
-        <p>© 2025 MathChallenge - Todos los derechos reservados</p>
-    </div>
-
     <script>
-        // Esperar a que el DOM esté completamente cargado
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log("DOM cargado completamente");
-            
-            // Variables globales
-            let playerName = "";
-            let score = 0;
-            let timer = 30;
-            let timerInterval;
-            let gameActive = false;
-            let problems = [];
-            let correctAnswers = 0;
-            let totalTime = 0;
-            let questionStartTime = 0;
-            let currentProblem = {};
-            
-            // Referencias DOM
-            const loginScreen = document.getElementById('loginScreen');
-            const gameScreen = document.getElementById('gameScreen');
-            const playerNameInput = document.getElementById('playerNameInput');
-            const saveNameButton = document.getElementById('saveNameButton');
-            const playerNameDisplay = document.getElementById('playerNameDisplay');
-            const problemEl = document.getElementById('problem');
-            const optionsEl = document.getElementById('options');
-            const scoreEl = document.getElementById('score');
-            const timerEl = document.getElementById('timer');
-            const timerBarEl = document.getElementById('timerBar');
-            const resultsEl = document.getElementById('results');
-            const finalScoreEl = document.getElementById('finalScore');
-            const correctCountEl = document.getElementById('correctCount');
-            const avgTimeEl = document.getElementById('avgTime');
-            const restartButton = document.getElementById('restartButton');
-            
-            // Guardar nombre de jugador
-            saveNameButton.addEventListener('click', function() {
-                console.log("Botón Guardar clickeado");
-                const name = playerNameInput.value.trim();
-                
-                if (name) {
-                    playerName = name;
-                    playerNameDisplay.textContent = name;
-                    
-                    try {
-                        localStorage.setItem('mathGamePlayerName', name);
-                    } catch (error) {
-                        console.error("Error al guardar en localStorage:", error);
-                    }
-                    
-                    // Cambiar pantallas
-                    loginScreen.style.display = 'none';
-                    gameScreen.style.display = 'block';
-                    
-                    // Iniciar juego
-                    startGame();
-                } else {
-                    alert("Por favor ingresa un nombre válido");
-                }
-            });
-            
-            // Evento Enter para el nombre
-            playerNameInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    saveNameButton.click();
-                }
-            });
-            
-            // Reiniciar juego
-            restartButton.addEventListener('click', function() {
+        // Variables
+        let playerName = "";
+        let score = 0;
+        let timer = 30;
+        let timerInterval;
+        let currentProblem = {};
+        
+        // Elementos DOM
+        const loginScreen = document.getElementById('loginScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const nameInput = document.getElementById('nameInput');
+        const startButton = document.getElementById('startButton');
+        const playerNameEl = document.getElementById('playerName');
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+        const problemEl = document.getElementById('problem');
+        const optionsEl = document.getElementById('options');
+        const resultsEl = document.getElementById('results');
+        const finalScoreEl = document.getElementById('finalScore');
+        const restartButton = document.getElementById('restartButton');
+        
+        // Evento de inicio
+        startButton.onclick = function() {
+            const name = nameInput.value.trim();
+            if (name) {
+                playerName = name;
+                playerNameEl.textContent = name;
+                loginScreen.style.display = 'none';
+                gameScreen.style.display = 'block';
                 startGame();
+            } else {
+                alert('Por favor ingresa tu nombre');
+            }
+        };
+        
+        // Reiniciar juego
+        restartButton.onclick = function() {
+            resultsEl.style.display = 'none';
+            startGame();
+        };
+        
+        // Iniciar juego
+        function startGame() {
+            score = 0;
+            timer = 30;
+            scoreEl.textContent = '0';
+            timerEl.textContent = '30';
+            generateProblem();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        
+        // Actualizar temporizador
+        function updateTimer() {
+            timer--;
+            timerEl.textContent = timer;
+            
+            if (timer <= 0) {
+                clearInterval(timerInterval);
+                showResults();
+            }
+        }
+        
+        // Generar problema
+        function generateProblem() {
+            // Generar números aleatorios
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            
+            // Elegir operación
+            const operations = ['+', '-', '×'];
+            const operation = operations[Math.floor(Math.random() * operations.length)];
+            
+            // Calcular resultado
+            let correctAnswer;
+            if (operation === '+') {
+                correctAnswer = num1 + num2;
+            } else if (operation === '-') {
+                correctAnswer = Math.max(num1, num2) - Math.min(num1, num2);
+            } else if (operation === '×') {
+                correctAnswer = num1 * num2;
+            }
+            
+            // Crear texto del problema
+            let problemText;
+            if (operation === '-' && num1 < num2) {
+                problemText = `${num2} ${operation} ${num1}`;
+            } else {
+                problemText = `${num1} ${operation} ${num2}`;
+            }
+            
+            // Generar opciones
+            const options = [correctAnswer];
+            while (options.length < 4) {
+                const randomOption = Math.floor(Math.random() * 50) + 1;
+                if (!options.includes(randomOption)) {
+                    options.push(randomOption);
+                }
+            }
+            
+            // Mezclar opciones
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+            
+            // Guardar problema actual
+            currentProblem = {
+                text: problemText,
+                options: options,
+                correctAnswer: correctAnswer
+            };
+            
+            // Mostrar problema
+            displayProblem();
+        }
+        
+        // Mostrar problema
+        function displayProblem() {
+            problemEl.textContent = currentProblem.text;
+            optionsEl.innerHTML = '';
+            
+            currentProblem.options.forEach(option => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'option';
+                optionEl.textContent = option;
+                optionEl.onclick = function() {
+                    checkAnswer(option);
+                };
+                optionsEl.appendChild(optionEl);
+            });
+        }
+        
+        // Verificar respuesta
+        function checkAnswer(selectedAnswer) {
+            const options = document.querySelectorAll('.option');
+            
+            // Deshabilitar opciones
+            options.forEach(option => {
+                option.style.pointerEvents = 'none';
+                
+                if (parseInt(option.textContent) === currentProblem.correctAnswer) {
+                    option.classList.add('correct');
+                } else if (parseInt(option.textContent) === selectedAnswer && selectedAnswer !== currentProblem.correctAnswer) {
+                    option.classList.add('incorrect');
+                }
             });
             
-            // Verificar si hay nombre guardado
-            try {
-                const savedName = localStorage.getItem('mathGamePlayerName');
-                if (savedName && savedName.trim() !== '') {
-                    playerNameInput.value = savedName;
-                }
-            } catch (error) {
-                console.error("Error al acceder a localStorage:", error);
+            // Comprobar respuesta
+            if (selectedAnswer === currentProblem.correctAnswer) {
+                score += 10;
+                scoreEl.textContent = score;
             }
             
-            // Iniciar juego
-            function startGame() {
-                console.log("Juego iniciado");
-                // Resetear variables
-                score = 0;
-                timer = 30;
-                problems = [];
-                correctAnswers = 0;
-                totalTime = 0;
-                gameActive = true;
-                
-                // Actualizar UI
-                scoreEl.textContent = `Puntos: ${score}`;
-                timerEl.textContent = `${timer} s`;
-                timerBarEl.style.width = '100%';
-                resultsEl.style.display = 'none';
-                
-                // Generar primer problema
+            // Siguiente problema
+            setTimeout(function() {
                 generateProblem();
-                
-                // Iniciar temporizador
-                timerInterval = setInterval(updateTimer, 1000);
-            }
-            
-            // Generar problema
-            function generateProblem() {
-                console.log("Generando problema");
-                // Generar números aleatorios entre 1 y 20
-                const num1 = Math.floor(Math.random() * 20) + 1;
-                const num2 = Math.floor(Math.random() * 20) + 1;
-                
-                // Elegir operación aleatoria
-                const operations = ['+', '-', '*'];
-                const operation = operations[Math.floor(Math.random() * operations.length)];
-                
-                // Calcular resultado
-                let correctResult;
-                let problemText;
-                
-                switch (operation) {
-                    case '+':
-                        correctResult = num1 + num2;
-                        problemText = `${num1} + ${num2}`;
-                        break;
-                    case '-':
-                        // Asegurar que el resultado no sea negativo
-                        if (num1 >= num2) {
-                            correctResult = num1 - num2;
-                            problemText = `${num1} - ${num2}`;
-                        } else {
-                            correctResult = num2 - num1;
-                            problemText = `${num2} - ${num1}`;
-                        }
-                        break;
-                    case '*':
-                        correctResult = num1 * num2;
-                        problemText = `${num1} × ${num2}`;
-                        break;
-                }
-                
-                // Generar opciones (una correcta y 15 incorrectas)
-                const options = [correctResult];
-                
-                while (options.length < 16) {
-                    // Generar un número aleatorio para opción incorrecta
-                    const randomOption = Math.floor(Math.random() * 100) + 1;
-                    
-                    // Añadir si no está ya en las opciones
-                    if (!options.includes(randomOption)) {
-                        options.push(randomOption);
-                    }
-                }
-                
-                // Mezclar opciones
-                shuffleArray(options);
-                
-                currentProblem = {
-                    text: problemText,
-                    options: options,
-                    correctAnswer: correctResult
-                };
-                
-                // Mostrar problema
-                displayProblem();
-                
-                // Guardar tiempo de inicio
-                questionStartTime = Date.now();
-            }
-            
-            // Mostrar problema en la UI
-            function displayProblem() {
-                problemEl.textContent = currentProblem.text;
-                optionsEl.innerHTML = '';
-                
-                currentProblem.options.forEach(option => {
-                    const button = document.createElement('button');
-                    button.className = 'option-button';
-                    button.textContent = option;
-                    
-                    button.onclick = function() {
-                        checkAnswer(option);
-                    };
-                    
-                    optionsEl.appendChild(button);
-                });
-            }
-            
-            // Verificar respuesta
-            function checkAnswer(selectedAnswer) {
-                if (!gameActive) return;
-                
-                // Calcular tiempo para responder
-                const answerTime = (Date.now() - questionStartTime) / 1000;
-                totalTime += answerTime;
-                
-                // Obtener todos los botones
-                const buttons = document.querySelectorAll('.option-button');
-                
-                // Deshabilitar todos los botones
-                buttons.forEach(button => {
-                    button.disabled = true;
-                    
-                    // Marcar botón correcto e incorrecto
-                    if (parseInt(button.textContent) === currentProblem.correctAnswer) {
-                        button.classList.add('correct');
-                    } else if (parseInt(button.textContent) === selectedAnswer && selectedAnswer !== currentProblem.correctAnswer) {
-                        button.classList.add('incorrect');
-                    }
-                });
-                
-                // Comprobar si la respuesta es correcta
-                if (selectedAnswer === currentProblem.correctAnswer) {
-                    // Calcular puntos basados en tiempo de respuesta
-                    const pointsEarned = Math.max(5, Math.floor(30 - answerTime) * 2);
-                    score += pointsEarned;
-                    scoreEl.textContent = `Puntos: ${score}`;
-                    correctAnswers++;
-                }
-                
-                // Guardar problema para historial
-                problems.push({
-                    problem: currentProblem.text,
-                    correct: selectedAnswer === currentProblem.correctAnswer,
-                    time: answerTime
-                });
-                
-                // Esperar antes de mostrar siguiente problema
-                setTimeout(() => {
-                    if (gameActive) {
-                        generateProblem();
-                    }
-                }, 1000);
-            }
-            
-            // Actualizar temporizador
-            function updateTimer() {
-                timer--;
-                
-                // Actualizar UI
-                timerEl.textContent = `${timer} s`;
-                timerBarEl.style.width = `${(timer / 30) * 100}%`;
-                
-                // Comprobar fin del tiempo
-                if (timer <= 0) {
-                    endGame();
-                }
-            }
-            
-            // Finalizar juego
-            function endGame() {
-                gameActive = false;
-                clearInterval(timerInterval);
-                
-                // Mostrar resultados
-                finalScoreEl.textContent = score;
-                correctCountEl.textContent = correctAnswers;
-                avgTimeEl.textContent = problems.length > 0 ? (totalTime / problems.length).toFixed(1) : '0';
-                
-                resultsEl.style.display = 'block';
-                
-                // Guardar puntuación
-                saveScore(score, totalTime / problems.length);
-            }
-            
-            // Guardar puntuación
-            function saveScore(score, avgTime) {
-                try {
-                    // Obtener puntuaciones anteriores
-                    let scores = [];
-                    const savedScores = localStorage.getItem('mathGameScores');
-                    
-                    if (savedScores) {
-                        try {
-                            scores = JSON.parse(savedScores);
-                            if (!Array.isArray(scores)) {
-                                scores = [];
-                            }
-                        } catch (e) {
-                            scores = [];
-                        }
-                    }
-                    
-                    // Añadir nueva puntuación
-                    scores.push({
-                        name: playerName,
-                        score: score,
-                        time: avgTime
-                    });
-                    
-                    // Ordenar por puntuación
-                    scores.sort((a, b) => b.score - a.score);
-                    
-                    // Limitar a 10 puntuaciones
-                    scores = scores.slice(0, 10);
-                    
-                    // Guardar
-                    localStorage.setItem('mathGameScores', JSON.stringify(scores));
-                    
-                    // Actualizar tabla
-                    updateLeaderboard(scores);
-                } catch (error) {
-                    console.error("Error al guardar puntuación:", error);
-                }
-            }
-            
-            // Actualizar tabla de clasificación
-            function updateLeaderboard(scores) {
-                const leaderboard = document.getElementById('leaderboard');
-                
-                // Mantener solo la fila de cabecera
-                while (leaderboard.rows.length > 1) {
-                    leaderboard.deleteRow(1);
-                }
-                
-                // Si no hay puntuaciones, salir
-                if (!scores || scores.length === 0) return;
-                
-                // Añadir puntuaciones
-                scores.forEach((scoreItem, index) => {
-                    const row = leaderboard.insertRow();
-                    
-                    // Resaltar jugador actual
-                    if (scoreItem.name === playerName) {
-                        row.classList.add('highlight');
-                    }
-                    
-                    // Añadir celdas
-                    const posCell = row.insertCell(0);
-                    const nameCell = row.insertCell(1);
-                    const scoreCell = row.insertCell(2);
-                    const timeCell = row.insertCell(3);
-                    
-                    posCell.textContent = index + 1;
-                    nameCell.textContent = scoreItem.name;
-                    scoreCell.textContent = scoreItem.score;
-                    timeCell.textContent = `${scoreItem.time.toFixed(1)}s`;
-                });
-            }
-            
-            // Cargar puntuaciones guardadas
-            function loadScores() {
-                try {
-                    const savedScores = localStorage.getItem('mathGameScores');
-                    if (savedScores) {
-                        const scores = JSON.parse(savedScores);
-                        if (Array.isArray(scores) && scores.length > 0) {
-                            updateLeaderboard(scores);
-                        }
-                    }
-                } catch (error) {
-                    console.error("Error al cargar puntuaciones:", error);
-                }
-            }
-            
-            // Utilidades
-            function shuffleArray(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-            }
-            
-            // Cargar puntuaciones al inicio
-            loadScores();
-        });
+            }, 1000);
+        }
+        
+        // Mostrar resultados
+        function showResults() {
+            finalScoreEl.textContent = score;
+            resultsEl.style.display = 'block';
+        }
     </script>
 </body>
 </html>
