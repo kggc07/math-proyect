@@ -3,6 +3,7 @@
 <head>
     <title>MathChallenge</title>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -10,6 +11,7 @@
             margin: 0 auto;
             padding: 20px;
             text-align: center;
+            background-color: #f5f5f5;
         }
         .container {
             background: white;
@@ -68,6 +70,23 @@
         button.selected {
             background: #2a4f85;
         }
+        .game-mode {
+            background: #e0e8f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .game-mode.selected {
+            background: #4a6fa5;
+            color: white;
+        }
+        .game-mode h3 {
+            margin: 0 0 10px 0;
+        }
+        #game-screen, #results {
+            display: none;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -81,9 +100,6 @@
             background: #4a6fa5;
             color: white;
         }
-        #game-screen, #results {
-            display: none;
-        }
     </style>
 </head>
 <body>
@@ -93,11 +109,28 @@
         <!-- Pantalla de inicio -->
         <div id="start-screen">
             <input type="text" id="player-name" placeholder="Tu nombre">
-            <div>
-                <button id="easy" class="selected" onclick="document.getElementById('easy').className='selected';document.getElementById('medium').className='';document.getElementById('hard').className='';">Fácil</button>
-                <button id="medium" onclick="document.getElementById('easy').className='';document.getElementById('medium').className='selected';document.getElementById('hard').className='';">Medio</button>
-                <button id="hard" onclick="document.getElementById('easy').className='';document.getElementById('medium').className='';document.getElementById('hard').className='selected';">Difícil</button>
+            
+            <h3>Modo de juego:</h3>
+            <div id="classic-mode" class="game-mode selected" onclick="selectMode('classic')">
+                <h3>Clásico</h3>
+                <p>Tiempo limitado por cada operación</p>
             </div>
+            <div id="timed-mode" class="game-mode" onclick="selectMode('timed')">
+                <h3>Contrarreloj</h3>
+                <p>60 segundos para resolver todas las que puedas</p>
+            </div>
+            <div id="survival-mode" class="game-mode" onclick="selectMode('survival')">
+                <h3>Supervivencia</h3>
+                <p>Gana tiempo extra con cada respuesta correcta</p>
+            </div>
+            
+            <h3>Dificultad:</h3>
+            <div>
+                <button id="easy-btn" class="selected" onclick="selectDifficulty('easy')">Fácil</button>
+                <button id="medium-btn" onclick="selectDifficulty('medium')">Medio</button>
+                <button id="hard-btn" onclick="selectDifficulty('hard')">Difícil</button>
+            </div>
+            
             <button onclick="startGame()">Comenzar Juego</button>
         </div>
         
@@ -116,8 +149,10 @@
         <!-- Resultados -->
         <div id="results">
             <h2>¡Fin del Juego!</h2>
+            <p>Modo: <span id="mode-result">Clásico</span></p>
             <p>Puntuación Final: <span id="final-score">0</span></p>
-            <button onclick="location.reload()">Jugar de Nuevo</button>
+            <p>Preguntas Correctas: <span id="correct-count">0</span></p>
+            <button onclick="window.location.reload()">Jugar de Nuevo</button>
         </div>
     </div>
     
@@ -128,6 +163,7 @@
             <tr>
                 <th>Posición</th>
                 <th>Jugador</th>
+                <th>Modo</th>
                 <th>Dificultad</th>
                 <th>Puntuación</th>
             </tr>
@@ -136,114 +172,122 @@
     </div>
     
     <script>
-        // Variables globales simplificadas
+        // Variables globales
         var playerName = '';
         var score = 0;
         var timer = 30;
+        var gameMode = 'classic';
         var difficulty = 'easy';
-        var timeInterval;
+        var correctCount = 0;
+        var timerInterval;
         
-        // Función para iniciar el juego
+        // Funciones para seleccionar opciones
+        function selectMode(mode) {
+            gameMode = mode;
+            document.getElementById('classic-mode').className = 'game-mode';
+            document.getElementById('timed-mode').className = 'game-mode';
+            document.getElementById('survival-mode').className = 'game-mode';
+            document.getElementById(mode + '-mode').className = 'game-mode selected';
+        }
+        
+        function selectDifficulty(level) {
+            difficulty = level;
+            document.getElementById('easy-btn').className = '';
+            document.getElementById('medium-btn').className = '';
+            document.getElementById('hard-btn').className = '';
+            document.getElementById(level + '-btn').className = 'selected';
+        }
+        
+        // Iniciar juego
         function startGame() {
-            // Obtener nombre
             playerName = document.getElementById('player-name').value.trim();
             if (!playerName) {
                 alert('Por favor ingresa tu nombre');
                 return;
             }
             
-            // Determinar dificultad
-            if (document.getElementById('medium').className === 'selected') {
-                difficulty = 'medium';
-                timer = 25;
-            } else if (document.getElementById('hard').className === 'selected') {
-                difficulty = 'hard';
-                timer = 20;
-            } else {
-                difficulty = 'easy';
-                timer = 30;
+            document.getElementById('name-display').textContent = playerName;
+            
+            // Configurar según modo
+            score = 0;
+            correctCount = 0;
+            document.getElementById('score-display').textContent = '0';
+            
+            if (gameMode === 'classic') {
+                timer = (difficulty === 'easy') ? 30 : (difficulty === 'medium') ? 25 : 20;
+            } else if (gameMode === 'timed') {
+                timer = 60;
+            } else if (gameMode === 'survival') {
+                timer = 10;
             }
             
-            // Actualizar UI
-            document.getElementById('name-display').textContent = playerName;
-            document.getElementById('score-display').textContent = '0';
             document.getElementById('timer-display').textContent = timer;
             
             // Mostrar pantalla de juego
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
-            document.getElementById('results').style.display = 'none';
-            
-            // Reiniciar valores
-            score = 0;
             
             // Generar primer problema
-            newProblem();
+            generateProblem();
             
             // Iniciar temporizador
-            clearInterval(timeInterval);
-            timeInterval = setInterval(function() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(function() {
                 timer--;
                 document.getElementById('timer-display').textContent = timer;
                 if (timer <= 0) {
+                    clearInterval(timerInterval);
                     endGame();
                 }
             }, 1000);
         }
         
-        // Generar nuevo problema
-        function newProblem() {
-            var num1, num2, operation, correctAnswer, problemText;
+        // Generar problema
+        function generateProblem() {
+            var min, max, operations;
             
-            // Configurar según dificultad
             if (difficulty === 'easy') {
-                num1 = Math.floor(Math.random() * 10) + 1;
-                num2 = Math.floor(Math.random() * 10) + 1;
-                operation = Math.random() < 0.5 ? '+' : '-';
+                min = 1; max = 10;
+                operations = ['+', '-'];
             } else if (difficulty === 'medium') {
-                num1 = Math.floor(Math.random() * 20) + 1;
-                num2 = Math.floor(Math.random() * 20) + 1;
-                var ops = ['+', '-', '*'];
-                operation = ops[Math.floor(Math.random() * ops.length)];
+                min = 1; max = 20;
+                operations = ['+', '-', '*'];
             } else {
-                num1 = Math.floor(Math.random() * 30) + 1;
-                num2 = Math.floor(Math.random() * 30) + 1;
-                var ops = ['+', '-', '*', '/'];
-                operation = ops[Math.floor(Math.random() * ops.length)];
+                min = 1; max = 30;
+                operations = ['+', '-', '*', '/'];
             }
             
-            // Calcular resultado
-            switch(operation) {
-                case '+':
-                    correctAnswer = num1 + num2;
-                    problemText = num1 + ' + ' + num2;
-                    break;
-                case '-':
-                    if (num1 < num2) {
-                        var temp = num1;
-                        num1 = num2;
-                        num2 = temp;
-                    }
-                    correctAnswer = num1 - num2;
-                    problemText = num1 + ' - ' + num2;
-                    break;
-                case '*':
-                    correctAnswer = num1 * num2;
-                    problemText = num1 + ' × ' + num2;
-                    break;
-                case '/':
-                    correctAnswer = num2;
-                    num1 = num1 * num2;
-                    problemText = num1 + ' ÷ ' + num2;
-                    break;
+            var num1 = Math.floor(Math.random() * (max - min + 1)) + min;
+            var num2 = Math.floor(Math.random() * (max - min + 1)) + min;
+            var op = operations[Math.floor(Math.random() * operations.length)];
+            
+            var correctAnswer, problemText;
+            
+            if (op === '+') {
+                correctAnswer = num1 + num2;
+                problemText = num1 + ' + ' + num2;
+            } else if (op === '-') {
+                if (num1 < num2) {
+                    var temp = num1;
+                    num1 = num2;
+                    num2 = temp;
+                }
+                correctAnswer = num1 - num2;
+                problemText = num1 + ' - ' + num2;
+            } else if (op === '*') {
+                correctAnswer = num1 * num2;
+                problemText = num1 + ' × ' + num2;
+            } else {
+                correctAnswer = num2;
+                num1 = num1 * num2;
+                problemText = num1 + ' ÷ ' + num2;
             }
             
-            // Mostrar problema
             document.getElementById('problem-display').textContent = problemText;
             
             // Generar opciones
             var options = [correctAnswer];
-            while(options.length < 16) {
+            while (options.length < 16) {
                 var option = Math.floor(Math.random() * 50) + 1;
                 if (!options.includes(option)) {
                     options.push(option);
@@ -258,10 +302,10 @@
                 options[j] = temp;
             }
             
-            // Mostrar opciones
+            // Crear elementos de opciones
             var optionsHtml = '';
             for (var i = 0; i < options.length; i++) {
-                optionsHtml += '<div class="option" onclick="checkAnswer(' + options[i] + ',' + correctAnswer + ')">' + options[i] + '</div>';
+                optionsHtml += '<div class="option" onclick="checkAnswer(' + options[i] + ', ' + correctAnswer + ')">' + options[i] + '</div>';
             }
             document.getElementById('options-display').innerHTML = optionsHtml;
         }
@@ -271,63 +315,81 @@
             // Marcar opciones
             var options = document.getElementsByClassName('option');
             for (var i = 0; i < options.length; i++) {
-                options[i].onclick = null;
                 if (parseInt(options[i].textContent) === correct) {
                     options[i].className = 'option correct';
                 } else if (parseInt(options[i].textContent) === selected && selected !== correct) {
                     options[i].className = 'option incorrect';
                 }
+                // Deshabilitar clic
+                options[i].onclick = null;
             }
             
-            // Actualizar puntuación
+            // Actualizar puntuación si es correcto
             if (selected === correct) {
                 var points = (difficulty === 'easy') ? 5 : (difficulty === 'medium') ? 10 : 15;
                 score += points;
+                correctCount++;
                 document.getElementById('score-display').textContent = score;
+                
+                // Añadir tiempo en modo supervivencia
+                if (gameMode === 'survival') {
+                    var bonusTime = (difficulty === 'easy') ? 3 : (difficulty === 'medium') ? 2 : 1;
+                    timer += bonusTime;
+                    document.getElementById('timer-display').textContent = timer;
+                }
             }
             
-            // Próximo problema
-            setTimeout(newProblem, 1000);
+            // Generar siguiente problema después de 1 segundo
+            setTimeout(function() {
+                if (timer > 0) {
+                    generateProblem();
+                }
+            }, 1000);
         }
         
         // Finalizar juego
         function endGame() {
-            clearInterval(timeInterval);
+            clearInterval(timerInterval);
             
-            // Mostrar resultados
+            document.getElementById('mode-result').textContent = 
+                (gameMode === 'classic') ? 'Clásico' : 
+                (gameMode === 'timed') ? 'Contrarreloj' : 'Supervivencia';
+                
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('correct-count').textContent = correctCount;
+            
             document.getElementById('game-screen').style.display = 'none';
             document.getElementById('results').style.display = 'block';
-            document.getElementById('final-score').textContent = score;
             
             // Guardar puntuación
+            saveScore();
+        }
+        
+        // Guardar puntuación
+        function saveScore() {
             var scores = [];
             try {
                 var saved = localStorage.getItem('mathScores');
-                if (saved) {
-                    scores = JSON.parse(saved);
-                }
+                if (saved) scores = JSON.parse(saved);
             } catch(e) {}
             
             scores.push({
                 name: playerName,
+                mode: gameMode,
                 difficulty: difficulty,
                 score: score
             });
             
-            // Ordenar puntuaciones
             scores.sort(function(a, b) {
                 return b.score - a.score;
             });
             
-            // Mantener las 10 mejores
             scores = scores.slice(0, 10);
             
-            // Guardar en localStorage
             try {
                 localStorage.setItem('mathScores', JSON.stringify(scores));
             } catch(e) {}
             
-            // Actualizar tabla
             updateLeaderboard(scores);
         }
         
@@ -335,17 +397,27 @@
         function updateLeaderboard(scores) {
             var html = '';
             for (var i = 0; i < scores.length; i++) {
-                var diffText = (scores[i].difficulty === 'easy') ? 'Fácil' : 
-                               (scores[i].difficulty === 'medium') ? 'Medio' : 'Difícil';
-                
-                html += '<tr' + (scores[i].name === playerName && scores[i].score === score ? ' style="background:#ffe6a8"' : '') + '>' +
-                        '<td>' + (i + 1) + '</td>' +
-                        '<td>' + scores[i].name + '</td>' +
-                        '<td>' + diffText + '</td>' +
-                        '<td>' + scores[i].score + '</td>' +
-                        '</tr>';
+                var row = '<tr' + (scores[i].name === playerName && scores[i].score === score ? ' style="background:#ffe6a8"' : '') + '>' +
+                    '<td>' + (i + 1) + '</td>' +
+                    '<td>' + scores[i].name + '</td>' +
+                    '<td>' + getModeText(scores[i].mode) + '</td>' +
+                    '<td>' + getDifficultyText(scores[i].difficulty) + '</td>' +
+                    '<td>' + scores[i].score + '</td>' +
+                    '</tr>';
+                html += row;
             }
             document.getElementById('leaderboard').innerHTML = html;
+        }
+        
+        // Funciones de texto
+        function getModeText(mode) {
+            return (mode === 'classic') ? 'Clásico' : 
+                   (mode === 'timed') ? 'Contrarreloj' : 'Supervivencia';
+        }
+        
+        function getDifficultyText(diff) {
+            return (diff === 'easy') ? 'Fácil' : 
+                   (diff === 'medium') ? 'Medio' : 'Difícil';
         }
         
         // Cargar puntuaciones al inicio
