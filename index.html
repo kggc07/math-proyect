@@ -1,56 +1,31 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MathChallenge</title>
+    <meta charset="UTF-8">
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
             padding: 20px;
             text-align: center;
-            background-color: #f5f5f5;
         }
         .container {
             background: white;
-            border-radius: 8px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        h1, h2 {
-            color: #4a6fa5;
-        }
-        input, button {
-            padding: 8px 15px;
-            margin: 5px;
-            border-radius: 4px;
-        }
-        button {
-            background-color: #4a6fa5;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #3a5a8a;
-        }
-        button.selected {
-            background-color: #2a4f85;
-        }
-        #gameScreen {
-            display: none;
-        }
-        .status {
-            display: flex;
-            justify-content: space-between;
-            background-color: #4a6fa5;
+        .status-bar {
+            background: #4a6fa5;
             color: white;
             padding: 10px;
-            border-radius: 4px;
-            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
         .problem {
             font-size: 24px;
@@ -60,27 +35,38 @@
         .options {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+            grid-gap: 10px;
+            margin-bottom: 20px;
         }
         .option {
-            background-color: #e0e8f5;
+            background: #e0e8f5;
             padding: 10px;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
         }
         .option:hover {
-            background-color: #d0dcf0;
+            background: #cddcf0;
         }
-        .correct {
-            background-color: #4caf50 !important;
+        .option.correct {
+            background: #4caf50;
             color: white;
         }
-        .incorrect {
-            background-color: #f44336 !important;
+        .option.incorrect {
+            background: #f44336;
             color: white;
         }
-        #results {
-            display: none;
+        button {
+            background: #4a6fa5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button.selected {
+            background: #2a4f85;
         }
         table {
             width: 100%;
@@ -92,8 +78,11 @@
             border-bottom: 1px solid #ddd;
         }
         th {
-            background-color: #4a6fa5;
+            background: #4a6fa5;
             color: white;
+        }
+        #game-screen, #results {
+            display: none;
         }
     </style>
 </head>
@@ -102,35 +91,37 @@
         <h1>MathChallenge</h1>
         
         <!-- Pantalla de inicio -->
-        <div id="loginScreen">
-            <input type="text" id="nameInput" placeholder="Tu nombre">
+        <div id="start-screen">
+            <input type="text" id="player-name" placeholder="Tu nombre">
             <div>
-                <button id="easyBtn" class="selected">Fácil</button>
-                <button id="mediumBtn">Medio</button>
-                <button id="hardBtn">Difícil</button>
+                <button id="easy" class="selected" onclick="document.getElementById('easy').className='selected';document.getElementById('medium').className='';document.getElementById('hard').className='';">Fácil</button>
+                <button id="medium" onclick="document.getElementById('easy').className='';document.getElementById('medium').className='selected';document.getElementById('hard').className='';">Medio</button>
+                <button id="hard" onclick="document.getElementById('easy').className='';document.getElementById('medium').className='';document.getElementById('hard').className='selected';">Difícil</button>
             </div>
-            <button id="startBtn">Comenzar Juego</button>
+            <button onclick="startGame()">Comenzar Juego</button>
         </div>
         
         <!-- Pantalla de juego -->
-        <div id="gameScreen">
-            <div class="status">
-                <div>Jugador: <span id="playerName"></span></div>
-                <div>Puntos: <span id="score">0</span></div>
-                <div>Tiempo: <span id="timer">30</span>s</div>
+        <div id="game-screen">
+            <div class="status-bar">
+                <div>Jugador: <span id="name-display"></span></div>
+                <div>Puntos: <span id="score-display">0</span></div>
+                <div>Tiempo: <span id="timer-display">30</span>s</div>
             </div>
             
-            <div class="problem" id="problem"></div>
-            <div class="options" id="options"></div>
-            
-            <div id="results">
-                <h2>¡Fin del Juego!</h2>
-                <p>Puntuación Final: <span id="finalScore">0</span></p>
-                <button id="restartBtn">Jugar de Nuevo</button>
-            </div>
+            <div class="problem" id="problem-display"></div>
+            <div class="options" id="options-display"></div>
+        </div>
+        
+        <!-- Resultados -->
+        <div id="results">
+            <h2>¡Fin del Juego!</h2>
+            <p>Puntuación Final: <span id="final-score">0</span></p>
+            <button onclick="location.reload()">Jugar de Nuevo</button>
         </div>
     </div>
     
+    <!-- Tabla de clasificación -->
     <div class="container">
         <h2>Tabla de Clasificación</h2>
         <table>
@@ -143,295 +134,230 @@
             <tbody id="leaderboard"></tbody>
         </table>
     </div>
-
-<script>
-// Variables
-let playerName = '';
-let difficulty = 'easy';
-let score = 0;
-let timer = 30;
-let timerID;
-let currentProblem = {};
-
-// Elementos DOM
-const loginScreen = document.getElementById('loginScreen');
-const gameScreen = document.getElementById('gameScreen');
-const nameInput = document.getElementById('nameInput');
-const easyBtn = document.getElementById('easyBtn');
-const mediumBtn = document.getElementById('mediumBtn');
-const hardBtn = document.getElementById('hardBtn');
-const startBtn = document.getElementById('startBtn');
-const playerNameEl = document.getElementById('playerName');
-const scoreEl = document.getElementById('score');
-const timerEl = document.getElementById('timer');
-const problemEl = document.getElementById('problem');
-const optionsEl = document.getElementById('options');
-const resultsEl = document.getElementById('results');
-const finalScoreEl = document.getElementById('finalScore');
-const restartBtn = document.getElementById('restartBtn');
-const leaderboardEl = document.getElementById('leaderboard');
-
-// Eventos iniciales
-easyBtn.onclick = function() { selectDifficulty('easy'); };
-mediumBtn.onclick = function() { selectDifficulty('medium'); };
-hardBtn.onclick = function() { selectDifficulty('hard'); };
-startBtn.onclick = startGame;
-restartBtn.onclick = startGame;
-
-// Cargar puntuaciones
-loadScores();
-
-// Funciones
-function selectDifficulty(level) {
-    difficulty = level;
-    easyBtn.classList.remove('selected');
-    mediumBtn.classList.remove('selected');
-    hardBtn.classList.remove('selected');
     
-    if (level === 'easy') {
-        easyBtn.classList.add('selected');
-    } else if (level === 'medium') {
-        mediumBtn.classList.add('selected');
-    } else {
-        hardBtn.classList.add('selected');
-    }
-}
-
-function startGame() {
-    const name = nameInput.value.trim();
-    if (!name) {
-        alert('Por favor ingresa tu nombre');
-        return;
-    }
-    
-    playerName = name;
-    playerNameEl.textContent = name;
-    
-    if (difficulty === 'easy') {
-        timer = 30;
-    } else if (difficulty === 'medium') {
-        timer = 25;
-    } else {
-        timer = 20;
-    }
-    
-    score = 0;
-    scoreEl.textContent = '0';
-    timerEl.textContent = timer;
-    
-    loginScreen.style.display = 'none';
-    gameScreen.style.display = 'block';
-    resultsEl.style.display = 'none';
-    
-    generateProblem();
-    
-    clearInterval(timerID);
-    timerID = setInterval(updateTimer, 1000);
-}
-
-function updateTimer() {
-    timer--;
-    timerEl.textContent = timer;
-    
-    if (timer <= 0) {
-        clearInterval(timerID);
-        endGame();
-    }
-}
-
-function generateProblem() {
-    let min, max, operations;
-    
-    if (difficulty === 'easy') {
-        min = 1; max = 10;
-        operations = ['+', '-'];
-    } else if (difficulty === 'medium') {
-        min = 1; max = 20;
-        operations = ['+', '-', '*'];
-    } else {
-        min = 1; max = 30;
-        operations = ['+', '-', '*', '/'];
-    }
-    
-    const num1 = getRandomInt(min, max);
-    const num2 = getRandomInt(min, max);
-    const op = operations[getRandomInt(0, operations.length - 1)];
-    
-    let correctAnswer, problemText;
-    
-    if (op === '+') {
-        correctAnswer = num1 + num2;
-        problemText = `${num1} + ${num2}`;
-    } else if (op === '-') {
-        if (num1 >= num2) {
-            correctAnswer = num1 - num2;
-            problemText = `${num1} - ${num2}`;
-        } else {
-            correctAnswer = num2 - num1;
-            problemText = `${num2} - ${num1}`;
-        }
-    } else if (op === '*') {
-        correctAnswer = num1 * num2;
-        problemText = `${num1} × ${num2}`;
-    } else {
-        correctAnswer = num2;
-        const product = num1 * num2;
-        problemText = `${product} ÷ ${num1}`;
-    }
-    
-    const options = [correctAnswer];
-    
-    while (options.length < 16) {
-        let option;
-        const offset = getRandomInt(-5, 5);
+    <script>
+        // Variables globales simplificadas
+        var playerName = '';
+        var score = 0;
+        var timer = 30;
+        var difficulty = 'easy';
+        var timeInterval;
         
-        if (Math.random() < 0.7) {
-            option = correctAnswer + offset;
-        } else {
-            option = getRandomInt(1, correctAnswer * 2);
+        // Función para iniciar el juego
+        function startGame() {
+            // Obtener nombre
+            playerName = document.getElementById('player-name').value.trim();
+            if (!playerName) {
+                alert('Por favor ingresa tu nombre');
+                return;
+            }
+            
+            // Determinar dificultad
+            if (document.getElementById('medium').className === 'selected') {
+                difficulty = 'medium';
+                timer = 25;
+            } else if (document.getElementById('hard').className === 'selected') {
+                difficulty = 'hard';
+                timer = 20;
+            } else {
+                difficulty = 'easy';
+                timer = 30;
+            }
+            
+            // Actualizar UI
+            document.getElementById('name-display').textContent = playerName;
+            document.getElementById('score-display').textContent = '0';
+            document.getElementById('timer-display').textContent = timer;
+            
+            // Mostrar pantalla de juego
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            // Reiniciar valores
+            score = 0;
+            
+            // Generar primer problema
+            newProblem();
+            
+            // Iniciar temporizador
+            clearInterval(timeInterval);
+            timeInterval = setInterval(function() {
+                timer--;
+                document.getElementById('timer-display').textContent = timer;
+                if (timer <= 0) {
+                    endGame();
+                }
+            }, 1000);
         }
         
-        if (option > 0 && !options.includes(option)) {
-            options.push(option);
+        // Generar nuevo problema
+        function newProblem() {
+            var num1, num2, operation, correctAnswer, problemText;
+            
+            // Configurar según dificultad
+            if (difficulty === 'easy') {
+                num1 = Math.floor(Math.random() * 10) + 1;
+                num2 = Math.floor(Math.random() * 10) + 1;
+                operation = Math.random() < 0.5 ? '+' : '-';
+            } else if (difficulty === 'medium') {
+                num1 = Math.floor(Math.random() * 20) + 1;
+                num2 = Math.floor(Math.random() * 20) + 1;
+                var ops = ['+', '-', '*'];
+                operation = ops[Math.floor(Math.random() * ops.length)];
+            } else {
+                num1 = Math.floor(Math.random() * 30) + 1;
+                num2 = Math.floor(Math.random() * 30) + 1;
+                var ops = ['+', '-', '*', '/'];
+                operation = ops[Math.floor(Math.random() * ops.length)];
+            }
+            
+            // Calcular resultado
+            switch(operation) {
+                case '+':
+                    correctAnswer = num1 + num2;
+                    problemText = num1 + ' + ' + num2;
+                    break;
+                case '-':
+                    if (num1 < num2) {
+                        var temp = num1;
+                        num1 = num2;
+                        num2 = temp;
+                    }
+                    correctAnswer = num1 - num2;
+                    problemText = num1 + ' - ' + num2;
+                    break;
+                case '*':
+                    correctAnswer = num1 * num2;
+                    problemText = num1 + ' × ' + num2;
+                    break;
+                case '/':
+                    correctAnswer = num2;
+                    num1 = num1 * num2;
+                    problemText = num1 + ' ÷ ' + num2;
+                    break;
+            }
+            
+            // Mostrar problema
+            document.getElementById('problem-display').textContent = problemText;
+            
+            // Generar opciones
+            var options = [correctAnswer];
+            while(options.length < 16) {
+                var option = Math.floor(Math.random() * 50) + 1;
+                if (!options.includes(option)) {
+                    options.push(option);
+                }
+            }
+            
+            // Mezclar opciones
+            for (var i = options.length - 1; i > 0; i--) {
+                var j = Math.floor(Math.random() * (i + 1));
+                var temp = options[i];
+                options[i] = options[j];
+                options[j] = temp;
+            }
+            
+            // Mostrar opciones
+            var optionsHtml = '';
+            for (var i = 0; i < options.length; i++) {
+                optionsHtml += '<div class="option" onclick="checkAnswer(' + options[i] + ',' + correctAnswer + ')">' + options[i] + '</div>';
+            }
+            document.getElementById('options-display').innerHTML = optionsHtml;
         }
-    }
-    
-    shuffle(options);
-    
-    currentProblem = {
-        text: problemText,
-        options: options,
-        correct: correctAnswer
-    };
-    
-    displayProblem();
-}
-
-function displayProblem() {
-    problemEl.textContent = currentProblem.text;
-    optionsEl.innerHTML = '';
-    
-    currentProblem.options.forEach(function(option) {
-        const div = document.createElement('div');
-        div.className = 'option';
-        div.textContent = option;
-        div.onclick = function() { checkAnswer(option); };
-        optionsEl.appendChild(div);
-    });
-}
-
-function checkAnswer(answer) {
-    const options = document.getElementsByClassName('option');
-    
-    for (let i = 0; i < options.length; i++) {
-        options[i].style.pointerEvents = 'none';
         
-        const value = parseInt(options[i].textContent);
-        if (value === currentProblem.correct) {
-            options[i].classList.add('correct');
-        } else if (value === answer && answer !== currentProblem.correct) {
-            options[i].classList.add('incorrect');
+        // Verificar respuesta
+        function checkAnswer(selected, correct) {
+            // Marcar opciones
+            var options = document.getElementsByClassName('option');
+            for (var i = 0; i < options.length; i++) {
+                options[i].onclick = null;
+                if (parseInt(options[i].textContent) === correct) {
+                    options[i].className = 'option correct';
+                } else if (parseInt(options[i].textContent) === selected && selected !== correct) {
+                    options[i].className = 'option incorrect';
+                }
+            }
+            
+            // Actualizar puntuación
+            if (selected === correct) {
+                var points = (difficulty === 'easy') ? 5 : (difficulty === 'medium') ? 10 : 15;
+                score += points;
+                document.getElementById('score-display').textContent = score;
+            }
+            
+            // Próximo problema
+            setTimeout(newProblem, 1000);
         }
-    }
-    
-    if (answer === currentProblem.correct) {
-        let points = 5;
-        if (difficulty === 'medium') points = 10;
-        if (difficulty === 'hard') points = 15;
         
-        score += points;
-        scoreEl.textContent = score;
-    }
-    
-    setTimeout(function() {
-        if (timer > 0) generateProblem();
-    }, 1000);
-}
-
-function endGame() {
-    resultsEl.style.display = 'block';
-    finalScoreEl.textContent = score;
-    saveScore();
-}
-
-function saveScore() {
-    const scores = getScores();
-    
-    scores.push({
-        name: playerName,
-        difficulty: difficulty,
-        score: score
-    });
-    
-    scores.sort(function(a, b) {
-        return b.score - a.score;
-    });
-    
-    const topScores = scores.slice(0, 10);
-    
-    try {
-        localStorage.setItem('mathScores', JSON.stringify(topScores));
-    } catch (e) {
-        console.log('Error saving scores');
-    }
-    
-    updateLeaderboard(topScores);
-}
-
-function getScores() {
-    try {
-        const saved = localStorage.getItem('mathScores');
-        return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-        return [];
-    }
-}
-
-function loadScores() {
-    const scores = getScores();
-    updateLeaderboard(scores);
-}
-
-function updateLeaderboard(scores) {
-    leaderboardEl.innerHTML = '';
-    
-    scores.forEach(function(score, index) {
-        const row = document.createElement('tr');
+        // Finalizar juego
+        function endGame() {
+            clearInterval(timeInterval);
+            
+            // Mostrar resultados
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+            
+            // Guardar puntuación
+            var scores = [];
+            try {
+                var saved = localStorage.getItem('mathScores');
+                if (saved) {
+                    scores = JSON.parse(saved);
+                }
+            } catch(e) {}
+            
+            scores.push({
+                name: playerName,
+                difficulty: difficulty,
+                score: score
+            });
+            
+            // Ordenar puntuaciones
+            scores.sort(function(a, b) {
+                return b.score - a.score;
+            });
+            
+            // Mantener las 10 mejores
+            scores = scores.slice(0, 10);
+            
+            // Guardar en localStorage
+            try {
+                localStorage.setItem('mathScores', JSON.stringify(scores));
+            } catch(e) {}
+            
+            // Actualizar tabla
+            updateLeaderboard(scores);
+        }
         
-        const posCell = document.createElement('td');
-        posCell.textContent = index + 1;
+        // Actualizar tabla de clasificación
+        function updateLeaderboard(scores) {
+            var html = '';
+            for (var i = 0; i < scores.length; i++) {
+                var diffText = (scores[i].difficulty === 'easy') ? 'Fácil' : 
+                               (scores[i].difficulty === 'medium') ? 'Medio' : 'Difícil';
+                
+                html += '<tr' + (scores[i].name === playerName && scores[i].score === score ? ' style="background:#ffe6a8"' : '') + '>' +
+                        '<td>' + (i + 1) + '</td>' +
+                        '<td>' + scores[i].name + '</td>' +
+                        '<td>' + diffText + '</td>' +
+                        '<td>' + scores[i].score + '</td>' +
+                        '</tr>';
+            }
+            document.getElementById('leaderboard').innerHTML = html;
+        }
         
-        const nameCell = document.createElement('td');
-        nameCell.textContent = score.name;
-        
-        const diffCell = document.createElement('td');
-        diffCell.textContent = score.difficulty === 'easy' ? 'Fácil' : 
-                              score.difficulty === 'medium' ? 'Medio' : 'Difícil';
-        
-        const scoreCell = document.createElement('td');
-        scoreCell.textContent = score.score;
-        
-        row.appendChild(posCell);
-        row.appendChild(nameCell);
-        row.appendChild(diffCell);
-        row.appendChild(scoreCell);
-        
-        leaderboardEl.appendChild(row);
-    });
-}
-
-function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
-</script>
+        // Cargar puntuaciones al inicio
+        (function() {
+            try {
+                var saved = localStorage.getItem('mathScores');
+                if (saved) {
+                    var scores = JSON.parse(saved);
+                    updateLeaderboard(scores);
+                }
+            } catch(e) {}
+        })();
+    </script>
 </body>
 </html>
