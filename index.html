@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="MathChallenge - ¡Pon a prueba tus matemáticas!">
+    <meta property="og:description" content="Juega, compite y comparte tus resultados. ¿Puedes superar al resto?">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630?text=MathChallenge">
+    <meta property="og:url" content="https://tujuego.com">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>MathChallenge - Compite y Comparte</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 600px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            color: #4a6fa5;
+            margin: 0;
+        }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            background-color: #e0e8f5;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+        
+        .player-avatar {
+            width: 30px;
+            height: 30px;
+            background-color: #4a6fa5;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .player-name {
+            font-weight: bold;
+            color: #4a6fa5;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #4a6fa5;
+            color: white;
+            border-radius: 5px;
+        }
+        
+        .problem-container {
+            font-size: 32px;
+            text-align: center;
+            margin: 30px 0;
+            font-weight: bold;
+            min-height: 50px;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .option-button {
+            padding: 12px 5px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            background-color: #e0e8f5;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .option-button:hover {
+            background-color: #d0dcf0;
+            transform: scale(1.05);
+        }
+        
+        .option-button:active {
+            transform: scale(0.98);
+        }
+        
+        .option-button.selected {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        
+        .option-button.correct {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .option-button.incorrect {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .timer-bar {
+            height: 10px;
+            background-color: #e74c3c;
+            width: 100%;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: width 0.1s linear;
+        }
+        
+        .controls {
+            display: flex;
+            margin-top: 20px;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .button {
+            padding: 10px 20px;
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+        
+        .button:hover {
+            background-color: #3a5a8a;
+        }
+        
+        .button.share {
+            background-color: #4267B2;
+        }
+        
+        .button.share:hover {
+            background-color: #365899;
+        }
+        
+        .button.twitter {
+            background-color: #1DA1F2;
+        }
+        
+        .button.twitter:hover {
+            background-color: #0c85d0;
+        }
+        
+        .button.whatsapp {
+            background-color: #25D366;
+        }
+        
+        .button.whatsapp:hover {
+            background-color: #128C7E;
+        }
+        
+        .results {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+        
+        .results h2 {
+            color: #4a6fa5;
+        }
+        
+        .stat {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+        
+        .share-container {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .share-text {
+            color: #4a6fa5;
+            margin-bottom: 10px;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .ranking {
+            margin-top: 20px;
+            width: 90%;
+            max-width: 600px;
+            margin-bottom: 30px;
+        }
+        
+        .ranking h2 {
+            color: #4a6fa5;
+            text-align: center;
+        }
+        
+        .ranking-tabs {
+            display: flex;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .ranking-tab {
+            padding: 8px 15px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .ranking-tab.active {
+            color: #4a6fa5;
+            border-bottom: 3px solid #4a6fa5;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        .highlight {
+            background-color: #ffe6a8 !important;
+        }
+        
+        .player-form {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .player-input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 200px;
+            margin-right: 10px;
+        }
+        
+        .error-message {
+            color: #f44336;
+            font-size: 14px;
+            margin-top: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .challenge-banner {
+            background-color: #ffe6a8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+        }
+        
+        .challenge-banner p {
+            margin: 0;
+            font-weight: bold;
+        }
+        
+        .mode-selector {
+            display: flex;
+            margin-bottom: 20px;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .mode-button {
+            padding: 8px 16px;
+            background-color: #e0e8f5;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .mode-button.selected {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        
+        .game-modes {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            width: 90%;
+            max-width: 600px;
+        }
+        
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        @media (max-width: 480px) {
+            .options-grid {
+                grid-template-columns: repeat(4, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+                gap: 5px;
+            }
+            
+            .option-button {
+                padding: 10px 5px;
+                font-size: 16px;
+            }
+            
+            .problem-container {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MathChallenge</h1>
+            <div class="player-info" id="player-display" style="display: none;">
+                <div class="player-avatar" id="player-avatar"></div>
+                <div class="player-name" id="player-name-display"></div>
+            </div>
+        </header>
+        
+        <div id="challenge-banner" class="challenge-banner">
+            <p>¡Te han desafiado! ¿Puedes superar esta puntuación?</p>
+        </div>
+        
+        <div id="player-form" class="player-form">
+            <input type="text" id="player-name-input" class="player-input" placeholder="Tu nombre de jugador">
+            <button class="button" id="save-name-button">Guardar</button>
+            <div id="error-message" class="error-message">Por favor ingresa un nombre válido</div>
+        </div>
+        
+        <div id="game-modes" class="game-modes" style="display: none;">
+            <h3>Elige el modo de juego:</h3>
+            <div class="mode-selector">
+                <button id="mode-free" class="mode-button selected">Modo Libre</button>
+                <button id="mode-challenge" class="mode-button">Modo Desafío</button>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div id="score">Puntos: 0</div>
+            <div id="timer">30 s</div>
+        </div>
+        
+        <div id="question-container">
+            <div class="problem-container" id="problem"></div>
+            <div class="options-grid" id="options">
+                <!-- Opciones generadas dinámicamente -->
+            </div>
+        </div>
+        
+        <div class="timer-bar" id="timer-bar"></div>
+        
+        <div class="controls">
+            <button class="button" id="start-button" style="display: none;">¡Comenzar Juego!</button>
+        </div>
+        
+        <div class="results" id="results">
+            <h2>¡Fin del Juego!</h2>
+            <div class="stat">Puntuación Final: <span id="final-score">0</span></div>
+            <div class="stat">Preguntas Correctas: <span id="correct-count">0</span></div>
+            <div class="stat">Tiempo Promedio: <span id="avg-time">0</span> segundos</div>
+            
+            <div class="share-container">
+                <div class="share-text">¡Comparte tu resultado y desafía a tus amigos!</div>
+                <div class="share-buttons">
+                    <button class="button share" id="share-fb">Facebook</button>
+                    <button class="button twitter" id="share-twitter">Twitter</button>
+                    <button class="button whatsapp" id="share-whatsapp">WhatsApp</button>
+                </div>
+            </div>
+            
+            <button class="button" id="restart-button" style="margin-top: 15px;">Jugar de Nuevo</button>
+        </div>
+    </div>
+    
+    <div class="ranking">
+        <h2>Tabla de Clasificación</h2>
+        <div class="ranking-tabs">
+            <button class="ranking-tab active" id="tab-local">Puntuaciones Locales</button>
+            <button class="ranking-tab" id="tab-global">Top Mundial</button>
+        </div>
+        <table id="leaderboard">
+            <tr>
+                <th>Posición</th>
+                <th>Jugador</th>
+                <th>Puntuación</th>
+                <th>Tiempo</th>
+            </tr>
+            <!-- Las filas se generan dinámicamente -->
+        </table>
+    </div>
+    
+    <div class="footer">
+        <p>¿Te gustó el juego? ¡Compártelo con tus amigos y reta a ver quién obtiene la mejor puntuación!</p>
+        <p>© 2025 MathChallenge - Todos los derechos reservados</p>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Variables globales
+        let currentProblem = {};
+        let score = 0;
+        let timer = 30;
+        let timerInterval;
+        let gameActive = false;
+        let problems = [];
+        let correctAnswers = 0;
+        let totalTime = 0;
+        let questionStartTime = 0;
+        let playerName = "";
+        let gameMode = "free"; // "free" o "challenge"
+        let challengeScore = 0; // Para el modo desafío
+        
+        // Referencias DOM
+        const problemEl = document.getElementById('problem');
+        const optionsEl = document.getElementById('options');
+        const scoreEl = document.getElementById('score');
+        const timerEl = document.getElementById('timer');
+        const timerBarEl = document.getElementById('timer-bar');
+        const startButton = document.getElementById('start-button');
+        const resultsEl = document.getElementById('results');
+        const finalScoreEl = document.getElementById('final-score');
+        const correctCountEl = document.getElementById('correct-count');
+        const avgTimeEl = document.getElementById('avg-time');
+        const restartButton = document.getElementById('restart-button');
+        const playerFormEl = document.getElementById('player-form');
+        const playerNameInput = document.getElementById('player-name-input');
+        const saveNameButton = document.getElementById('save-name-button');
+        const playerDisplayEl = document.getElementById('player-display');
+        const playerNameDisplayEl = document.getElementById('player-name-display');
+        const playerAvatarEl = document.getElementById('player-avatar');
+        const errorMessageEl = document.getElementById('error-message');
+        const challengeBannerEl = document.getElementById('challenge-banner');
+        const gameModesEl = document.getElementById('game-modes');
+        const modeButtonFree = document.getElementById('mode-free');
+        const modeButtonChallenge = document.getElementById('mode-challenge');
+        const shareFbButton = document.getElementById('share-fb');
+        const shareTwitterButton = document.getElementById('share-twitter');
+        const shareWhatsappButton = document.getElementById('share-whatsapp');
+        const tabLocalButton = document.getElementById('tab-local');
+        const tabGlobalButton = document.getElementById('tab-global');
+        const notificationEl = document.getElementById('notification');
+        
+        // Configuración de dificultad
+        const DIFFICULTY = {
+            EASY: { min: 1, max: 10, operations: ['+', '-'] },
+            MEDIUM: { min: 5, max: 20, operations: ['+', '-', '*'] },
+            HARD: { min: 10, max: 50, operations: ['+', '-', '*', '/'] }
+        };
+        
+        // Inicialización
+        function init() {
+            // Event listeners
+            startButton.addEventListener('click', startGame);
+            restartButton.addEventListener('click', startGame);
+            saveNameButton.addEventListener('click', savePlayerName);
+            
+            // Evento de tecla Enter en input del nombre
+            playerNameInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    savePlayerName();
+                }
+            });
+            
+            // Event listeners para compartir
+            shareFbButton.addEventListener('click', shareOnFacebook);
+            shareTwitterButton.addEventListener('click', shareOnTwitter);
+            shareWhatsappButton.addEventListener('click', shareOnWhatsApp);
+            
+            // Event listeners para modos de juego
+            modeButtonFree.addEventListener('click', () => setGameMode('free'));
+            modeButtonChallenge.addEventListener('click', () => setGameMode('challenge'));
+            
+            // Event listeners para pestañas de clasificación
+            tabLocalButton.addEventListener('click', () => switchLeaderboardTab('local'));
+            tabGlobalButton.addEventListener('click', () => switchLeaderboardTab('global'));
+            
+            // Comprobar si hay parámetros en la URL (para desafíos)
+            checkUrlParameters();
+            
+            // Comprobar si ya hay un nombre guardado
+            checkSavedName();
+        }
+        
+        // Comprobar parámetros en la URL
+        function checkUrlParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const challenge = urlParams.get('challenge');
+            const score = urlParams.get('score');
+            const from = urlParams.get('from');
+            
+            if (challenge === 'true' && score && from) {
+                challengeScore = parseInt(score);
+                gameMode = 'challenge';
+                modeButtonFree.classList.remove('selected');
+                modeButtonChallenge.classList.add('selected');
+                
+                // Mostrar banner de desafío
+                challengeBannerEl.style.display = 'block';
+                challengeBannerEl.innerHTML = `<p>¡${from} te desafía a superar ${score} puntos!</p>`;
+            }
+        }
+        
+        // Cambiar modo de juego
+        function setGameMode(mode) {
+            gameMode = mode;
+            if (mode === 'free') {
+                modeButtonFree.classList.add('selected');
+                modeButtonChallenge.classList.remove('selected');
+                challengeBannerEl.style.display = 'none';
+            } else {
+                modeButtonFree.classList.remove('selected');
+                modeButtonChallenge.classList.add('selected');
+            }
+        }
+        
+        // Cambiar pestaña de clasificación
+        function switchLeaderboardTab(tab) {
+            if (tab === 'local') {
+                tabLocalButton.classList.add('active');
+                tabGlobalButton.classList.remove('active');
+                loadScores();
+            } else {
+                tabLocalButton.classList.remove('active');
+                tabGlobalButton.classList.add('active');
+                loadGlobalScores();
+            }
+        }
+        
+        // Cargar puntuaciones globales (simulado)
+        function loadGlobalScores() {
+            // En una implementación real, aquí harías una llamada a un API
+            // Por ahora, simulamos datos
+            const globalScores = [
+                {name: "Campeón99", score: 285, time: 1.8},
+                {name: "MaestroMath", score: 250, time: 2.0},
+                {name: "SuperCalculadora", score: 230, time: 1.9},
+                {name: "ReyNúmeros", score: 210, time: 2.2},
+                {name: "MathGuru", score: 200, time: 2.3}
+            ];
+            
+            updateLeaderboard(globalScores);
+            showNotification("Conectando con servidor global...");
+        }
+        
+        // Mostrar notificación
+        function showNotification(message, duration = 3000) {
+            notificationEl.textContent = message;
+            notificationEl.style.display = 'block';
+            notificationEl.style.opacity = '1';
+            
+            setTimeout(() => {
+                notificationEl.style.opacity = '0';
+                setTimeout(() => {
+                    notificationEl.style.display = 'none';
+                }, 300);
+            }, duration);
+        }
+        
+        // Comprobar si hay un nombre guardado
+        function checkSavedName() {
+            try {
+                const savedName = localStorage.getItem('mathGamePlayerName');
+                if (savedName && savedName.trim() !== '') {
+                    playerName = savedName;
+                    playerNameInput.value = savedName;
+                    showPlayerInfo();
+                }
+            } catch (error) {
+                console.error("Error al acceder al localStorage:", error);
+            }
+        }
+        
+        // Guardar nombre del jugador
+        function savePlayerName() {
+            const name = playerNameInput.value.trim();
+            
+            if (!name) {
+                errorMessageEl.style.display = 'block';
+                return;
+            }
+            
+            errorMessageEl.style.display = 'none';
+            playerName = name;
+            
+            try {
+                localStorage.setItem('mathGamePlayerName', name);
+            } catch (error) {
+                console.error("Error al guardar en localStorage:", error);
+            }
+            
+            showPlayerInfo();
+        }
+        
+        // Mostrar información del jugador
+        function showPlayerInfo() {
+            playerFormEl.style.display = 'none';
+            playerDisplayEl.style.display = 'flex';
+            playerNameDisplayEl.textContent = playerName;
+            
+            const initial = playerName.charAt(0).toUpperCase();
+            playerAvatarEl.textContent = initial || '👤';
+            
+            startButton.style.display = 'block';
+            gameModesEl.style.display = 'block';
+        }
+        
+        // Iniciar juego
+        function startGame() {
+            // Verificar que haya un nombre de jugador
+            if (!playerName) {
+                errorMessageEl.textContent = 'Por favor, ingresa tu nombre antes de comenzar';
+                errorMessageEl.style.display = 'block';
+                return;
+            }
+            
+            // Resetear variables
+            score = 0;
+            timer = 30;
+            problems = [];
+            correctAnswers = 0;
+            totalTime = 0;
+            gameActive = true;
+            
+            // Actualizar UI
+            scoreEl.textContent = `Puntos: ${score}`;
+            timerEl.textContent = `${timer} s`;
+            timerBarEl.style.width = '100%';
+            resultsEl.style.display = 'none';
+            startButton.style.display = 'none';
+            gameModesEl.style.display = 'none';
+            
+            // Generar primer problema
+            generateProblem();
+            
+            // Iniciar temporizador
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        
+        // Actualizar temporizador
+        function updateTimer() {
+            timer--;
+            
+            // Actualizar UI
+            timerEl.textContent = `${timer} s`;
+            timerBarEl.style.width = `${(timer / 30) * 100}%`;
+            
+            // Comprobar fin del tiempo
+            if (timer <= 0) {
+                endGame();
+            }
+        }
+        
+        // Generar problema matemático
+        function generateProblem() {
+            // Seleccionar dificultad basada en la puntuación
+            let difficulty;
+            if (score < 50) {
+                difficulty = DIFFICULTY.EASY;
+            } else if (score < 100) {
+                difficulty = DIFFICULTY.MEDIUM;
+            } else {
+                difficulty = DIFFICULTY.HARD;
+            }
+            
+            // Generar operación
+            const num1 = randomInt(difficulty.min, difficulty.max);
+            const num2 = randomInt(difficulty.min, difficulty.max);
+            const operation = difficulty.operations[randomInt(0, difficulty.operations.length - 1)];
+            
+            // Cálculo del resultado correcto
+            let correctResult;
+            let problemText;
+            
+            switch (operation) {
+                case '+':
+                    correctResult = num1 + num2;
+                    problemText = `${num1} + ${num2}`;
+                    break;
+                case '-':
+                    // Asegurar que el resultado no sea negativo
+                    if (num1 < num2) {
+                        correctResult = num2 - num1;
+                        problemText = `${num2} - ${num1}`;
+                    } else {
+                        correctResult = num1 - num2;
+                        problemText = `${num1} - ${num2}`;
+                    }
+                    break;
+                case '*':
+                    correctResult = num1 * num2;
+                    problemText = `${num1} × ${num2}`;
+                    break;
+                case '/':
+                    // Asegurar división exacta
+                    correctResult = num1;
+                    problemText = `${num1 * num2} ÷ ${num2}`;
+                    break;
+            }
+            
+            // Generar opciones para la cuadrícula (una correcta y el resto incorrectas)
+            const gridSize = 16; // 4x4 grid
+            const options = [correctResult];
+            
+            // Rango para números de distracción
+            const minOption = Math.max(1, correctResult - 20);
+            const maxOption = correctResult + 20;
+            
+            // Contador para evitar bucles infinitos
+            let attempts = 0;
+            
+            while (options.length < gridSize && attempts < 100) {
+                attempts++;
+                
+                // Generar opción incorrecta
+                let incorrectOption;
+                
+                // 50% cerca del resultado, 50% más aleatorio
+                if (Math.random() > 0.5) {
+                    // Opción cercana
+                    const offset = randomInt(1, 5);
+                    incorrectOption = correctResult + (Math.random() > 0.5 ? offset : -offset);
+                } else {
+                    // Opción más aleatoria dentro del rango
+                    incorrectOption = randomInt(minOption, maxOption);
+                }
+                
+                // Añadir si no está ya en las opciones
+                if (!options.includes(incorrectOption) && incorrectOption >= 0) {
+                    options.push(incorrectOption);
+                }
+            }
+            
+            // Si no conseguimos llenar la cuadrícula, completar con números aleatorios
+            while (options.length < gridSize) {
+                const randomNum = randomInt(1, 100);
+                if (!options.includes(randomNum)) {
+                    options.push(randomNum);
+                }
+            }
+            
+            // Mezclar opciones
+            shuffleArray(options);
+            
+            // Guardar problema actual
+            currentProblem = {
+                text: problemText,
+                options: options,
+                correctAnswer: correctResult
+            };
+            
+            // Mostrar problema
+            displayProblem();
+            
+            // Guardar tiempo de inicio
+            questionStartTime = Date.now();
+        }
+        
+        // Mostrar problema en la UI
+        function displayProblem() {
+            problemEl.textContent = currentProblem.text;
+            optionsEl.innerHTML = '';
+            
+            currentProblem.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option;
+                button.addEventListener('click', () => checkAnswer(option));
+                optionsEl.appendChild(button);
+            });
+        }
+        
+        // Comprobar respuesta
+        function checkAnswer(selectedAnswer) {
+            if (!gameActive) return;
+            
+            // Calcular tiempo para responder
+            const answerTime = (Date.now() - questionStartTime) / 1000;
+            totalTime += answerTime;
+            
+            // Obtener todos los botones
+            const buttons = document.querySelectorAll('.option-button');
+            
+            // Deshabilitar todos los botones
+            buttons.forEach(button => {
+                button.disabled = true;
+                
+                // Marcar botón correcto e incorrecto
+                if (parseInt(button.textContent) === currentProblem.correctAnswer) {
+                    button.classList.add('correct');
+                } else if (parseInt(button.textContent) === selectedAnswer && selectedAnswer !== currentProblem.correctAnswer) {
+                    button.classList.add('incorrect');
+                }
+            });
+            
+            // Comprobar si la respuesta es correcta
+            if (selectedAnswer === currentProblem.correctAnswer) {
+                // Calcular puntos basados en tiempo de respuesta
+                const pointsEarned = Math.max(5, Math.floor(30 - answerTime) * 2);
+                score += pointsEarned;
+                scoreEl.textContent = `Puntos: ${score}`;
+                correctAnswers++;
+            }
+            
+            // Guardar problema para historial
+            problems.push({
+                problem: currentProblem.text,
+                correct: selectedAnswer === currentProblem.correctAnswer,
+                time: answerTime
+            });
+            
+            // Esperar antes de mostrar siguiente problema
+            setTimeout(() => {
+                if (gameActive) {
+                    generateProblem();
+                }
+            }, 1000);
+        }
+        
+        // Finalizar juego
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            // Mostrar resultados
+            finalScoreEl.textContent = score;
+            correctCountEl.textContent = correctAnswers;
+            avgTimeEl.textContent = problems.length > 0 ? (totalTime / problems.length).toFixed(1) : '0';
+            
+            resultsEl.style.display = 'block';
+            startButton.style.display = 'block';
+            gameModesEl.style.display = 'block';
+            
+            // Verificar si se superó el desafío
+            if (gameMode === 'challenge' && score > challengeScore) {
+                showNotification(`¡Superaste el desafío! 🏆 ${score} vs ${challengeScore}`, 5000);
+            }
+            
+            // Guardar puntuación localmente
+            saveScore(score, totalTime / problems.length);
+        }
+        
+        // Guardar puntuación (simulado)
+        function saveScore(score, avgTime) {
+            try {
+                // Obtener puntuaciones anteriores del almacenamiento local
+                let scores = [];
+                const savedScores = localStorage.getItem('mathGameScores');
+                
+                if (savedScores) {
+                    try {
+                        scores = JSON.parse(savedScores);
+                        // Comprobar que sea un array
+                        if (!Array.isArray(scores)) {
+                            scores = [];
+                        }
+                    } catch (e) {
+                        console.error("Error parsing scores:", e);
+                        scores = [];
+                    }
+                }
+                
+                // Añadir nueva puntuación
+                scores.push({
+                    name: playerName,
+                    score: score,
+                    time: avgTime,
+                    date: new Date().toISOString()
+                });
+                
+                // Ordenar por puntuación (descendente) y luego por tiempo (ascendente)
+                scores.sort((a, b) => {
+                    if (a.score !== b.score) {
+                        return b.score - a.score;
+                    }
+                    return a.time - b.time;
+                });
+                
+                // Limitar a 10 mejores puntuaciones
+                scores = scores.slice(0, 10);
+                
+                // Guardar en almacenamiento local
+                localStorage.setItem('mathGameScores', JSON.stringify(scores));
+                
+                // Actualizar tabla de clasificación
+                updateLeaderboard(scores);
+                
+                // Simular envío al servidor (en una implementación real)
+                simulateServerSubmission(playerName, score, avgTime);
+            } catch (error) {
+                console.error("Error al guardar puntuación:", error);
+                // Si hay error de localStorage, actualizar tabla de todas formas con puntuación actual
+                updateLeaderboardWithCurrentScore(score, avgTime);
+            }
+        }
+        
+        // Simular envío al servidor
+        function simulateServerSubmission(name, score, time) {
+            // En una implementación real, aquí enviarías los datos a un servidor
+            console.log(`Simulando envío al servidor: ${name}, ${score} puntos, ${time.toFixed(1)}s`);
+            
+            // Mostrar notificación para simular
+            if (score > 100) {
+                showNotification("¡Nueva puntuación alta enviada al servidor global!", 3000);
+            }
+        }
+        
+        // Actualizar tabla solo con puntuación actual (fallback)
+        function updateLeaderboardWithCurrentScore(score, avgTime) {
+            const leaderboard = document.getElementById('leaderboard');
+            
+            // Mantener solo la fila de cabecera
+            while (leaderboard.rows.length > 1) {
+                leaderboard.deleteRow(1);
+            }
+            
+            // Añadir puntuación actual
+            const row = leaderboard.insertRow();
+            row.classList.add('highlight');
+            
+            // Añadir celdas
+            const posCell = row.insertCell(0);
+            const nameCell = row.insertCell(1);
+            const scoreCell = row.insertCell(2);
+            const timeCell = row.insertCell(3);
+            
+            posCell.textContent = 1;
+            nameCell.textContent = playerName;
+            scoreCell.textContent = score;
+            timeCell.textContent = `${avgTime.toFixed(1)}s`;
+        }
+        
+        // Actualizar tabla de clasificación
+        function updateLeaderboard(scores) {
+            const leaderboard = document.getElementById('leaderboard');
+            
+            // Mantener solo la fila de cabecera
+            while (leaderboard.rows.length > 1) {
+                leaderboard.deleteRow(1);
+            }
+            
+            // Si no hay puntuaciones, salir
+            if (!scores || scores.length === 0) return;
+            
+            // Añadir puntuaciones
+            scores.forEach((scoreItem, index) => {
+                const row = leaderboard.insertRow();
+                
+                // Destacar jugador actual
+                const isCurrent = scoreItem.name === playerName && 
+                                 scoreItem.date && 
+                                 new Date(scoreItem.date).getTime() > Date.now() - 60000; // Si se agregó en el último minuto
+                if (isCurrent) {
+                    row.classList.add('highlight');
+                }
+                
+                // Añadir celdas
+                const posCell = row.insertCell(0);
+                const nameCell = row.insertCell(1);
+                const scoreCell = row.insertCell(2);
+                const timeCell = row.insertCell(3);
+                
+                posCell.textContent = index + 1;
+                nameCell.textContent = scoreItem.name || 'Anónimo';
+                scoreCell.textContent = scoreItem.score || 0;
+                timeCell.textContent = scoreItem.time ? `${scoreItem.time.toFixed(1)}s` : '0s';
+            });
+        }
+        
+        // Cargar puntuaciones guardadas al inicio
+        function loadScores() {
+            try {
+                const savedScores = localStorage.getItem('mathGameScores');
+                if (savedScores) {
+                    const scores = JSON.parse(savedScores);
+                    if (Array.isArray(scores) && scores.length > 0) {
+                        updateLeaderboard(scores);
+                    }
+                }
+            } catch (error) {
+                console.error("Error al cargar puntuaciones:", error);
+            }
+        }
+        
+        // Compartir en Facebook
+        function shareOnFacebook() {
+            const text = `¡He obtenido ${score} puntos en MathChallenge! ¿Puedes superarme?`;
+            const url = generateChallengeUrl();
+            
+            // URL para compartir en Facebook
+            const shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(text)}`;
+            
+            // Abrir ventana de compartir
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+        }
+        
+        // Compartir en Twitter
+        function shareOnTwitter() {
+            const text = `¡He obtenido ${score} puntos en MathChallenge! ¿Puedes superarme? #MathChallenge`;
+            const url = generateChallengeUrl();
+            
+            // URL para compartir en Twitter
+            const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+            
+            // Abrir ventana de compartir
+            window.open(shareUrl, '_blank', 'width=600,height=400');
+        }
+        
+        // Compartir en WhatsApp
+        function shareOnWhatsApp() {
+            const text = `¡He obtenido ${score} puntos en MathChallenge! ¿Puedes superarme? ${generateChallengeUrl()}`;
+            
+            // URL para compartir en WhatsApp
+            const shareUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            
+            // Abrir en nueva pestaña
+            window.open(shareUrl, '_blank');
+        }
+        
+        // Generar URL para compartir desafío
+        function generateChallengeUrl() {
+            // Obtener URL base (en producción sería la URL real del juego)
+            const baseUrl = window.location.href.split('?')[0]; // Eliminar parámetros existentes
+            
+            // Añadir parámetros de desafío
+            return `${baseUrl}?challenge=true&score=${score}&from=${encodeURIComponent(playerName)}`;
+        }
+        
+        // Utilidades
+        function randomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        // Iniciar aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+            loadScores();
+        });
