@@ -5,21 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
             text-align: center;
             background-color: #f5f5f5;
         }
+        
         .container {
             background: white;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
         }
+        
+        h1 {
+            color: #4a6fa5;
+            margin-top: 5px;
+            font-size: 24px;
+        }
+        
+        h2 {
+            color: #4a6fa5;
+            font-size: 20px;
+        }
+        
+        h3 {
+            color: #444;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
         .status-bar {
             background: #4a6fa5;
             color: white;
@@ -27,78 +50,212 @@
             border-radius: 5px;
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            font-size: 14px;
         }
+        
         .problem {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
         }
+        
         .options {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            grid-gap: 10px;
-            margin-bottom: 20px;
+            grid-gap: 8px;
+            margin-bottom: 15px;
         }
+        
         .option {
             background: #e0e8f5;
-            padding: 10px;
+            padding: 12px 5px;
             border-radius: 5px;
             cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
+            font-size: 16px;
+            font-weight: bold;
+            -webkit-tap-highlight-color: transparent;
         }
-        .option:hover {
+        
+        .option:hover, .option:active {
             background: #cddcf0;
+            transform: scale(0.98);
         }
+        
         .option.correct {
             background: #4caf50;
             color: white;
         }
+        
         .option.incorrect {
             background: #f44336;
             color: white;
         }
+        
         button {
             background: #4a6fa5;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
-            margin: 5px;
+            margin: 8px;
+            transition: background-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
+        
+        button:hover, button:active {
+            background: #3a5a8a;
+        }
+        
         button.selected {
             background: #2a4f85;
+            box-shadow: 0 0 0 2px #4a6fa5, 0 0 0 4px rgba(74, 111, 165, 0.3);
         }
+        
+        input {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 80%;
+            max-width: 300px;
+            margin: 10px auto;
+            display: block;
+        }
+        
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            grid-gap: 10px;
+            margin: 15px 0;
+        }
+        
         .game-mode {
             background: #e0e8f5;
-            padding: 15px;
-            margin: 10px 0;
+            padding: 12px 8px;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.2s;
+            -webkit-tap-highlight-color: transparent;
         }
+        
+        .game-mode:hover, .game-mode:active {
+            background: #cddcf0;
+        }
+        
         .game-mode.selected {
             background: #4a6fa5;
             color: white;
         }
+        
         .game-mode h3 {
-            margin: 0 0 10px 0;
+            margin: 0 0 5px 0;
+            color: inherit;
         }
+        
+        .game-mode p {
+            font-size: 12px;
+            margin: 0;
+        }
+        
+        .difficulty-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 10px 0;
+        }
+        
         #game-screen, #results {
             display: none;
         }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #4caf50;
+            width: 100%;
+            transition: width 0.5s linear;
+        }
+        
         table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 14px;
         }
+        
         th, td {
-            padding: 8px;
+            padding: 8px 4px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
+        
         th {
             background: #4a6fa5;
             color: white;
+        }
+        
+        /* Media queries para diferentes tamaños de pantalla */
+        @media (max-width: 500px) {
+            .options {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(8, 1fr);
+            }
+            
+            .status-bar {
+                font-size: 12px;
+                padding: 8px;
+            }
+            
+            .problem {
+                font-size: 24px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            h2 {
+                font-size: 18px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            
+            .game-modes {
+                grid-template-columns: 1fr;
+            }
+            
+            table {
+                font-size: 12px;
+            }
+            
+            th, td {
+                padding: 6px 3px;
+            }
+        }
+        
+        @media (max-width: 350px) {
+            .option {
+                font-size: 14px;
+                padding: 10px 3px;
+            }
         }
     </style>
 </head>
@@ -111,21 +268,23 @@
             <input type="text" id="player-name" placeholder="Tu nombre">
             
             <h3>Modo de juego:</h3>
-            <div id="classic-mode" class="game-mode selected" onclick="selectMode('classic')">
-                <h3>Clásico</h3>
-                <p>Tiempo limitado por cada operación</p>
-            </div>
-            <div id="timed-mode" class="game-mode" onclick="selectMode('timed')">
-                <h3>Contrarreloj</h3>
-                <p>60 segundos para resolver todas las que puedas</p>
-            </div>
-            <div id="survival-mode" class="game-mode" onclick="selectMode('survival')">
-                <h3>Supervivencia</h3>
-                <p>Gana tiempo extra con cada respuesta correcta</p>
+            <div class="game-modes">
+                <div id="classic-mode" class="game-mode selected" onclick="selectMode('classic')">
+                    <h3>Clásico</h3>
+                    <p>Tiempo limitado por operación</p>
+                </div>
+                <div id="timed-mode" class="game-mode" onclick="selectMode('timed')">
+                    <h3>Contrarreloj</h3>
+                    <p>60 segundos total</p>
+                </div>
+                <div id="survival-mode" class="game-mode" onclick="selectMode('survival')">
+                    <h3>Supervivencia</h3>
+                    <p>Gana tiempo extra</p>
+                </div>
             </div>
             
             <h3>Dificultad:</h3>
-            <div>
+            <div class="difficulty-buttons">
                 <button id="easy-btn" class="selected" onclick="selectDifficulty('easy')">Fácil</button>
                 <button id="medium-btn" onclick="selectDifficulty('medium')">Medio</button>
                 <button id="hard-btn" onclick="selectDifficulty('hard')">Difícil</button>
@@ -140,6 +299,10 @@
                 <div>Jugador: <span id="name-display"></span></div>
                 <div>Puntos: <span id="score-display">0</span></div>
                 <div>Tiempo: <span id="timer-display">30</span>s</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
             </div>
             
             <div class="problem" id="problem-display"></div>
@@ -161,11 +324,11 @@
         <h2>Tabla de Clasificación</h2>
         <table>
             <tr>
-                <th>Posición</th>
+                <th>#</th>
                 <th>Jugador</th>
                 <th>Modo</th>
                 <th>Dificultad</th>
-                <th>Puntuación</th>
+                <th>Puntos</th>
             </tr>
             <tbody id="leaderboard"></tbody>
         </table>
@@ -180,6 +343,7 @@
         var difficulty = 'easy';
         var correctCount = 0;
         var timerInterval;
+        var progressInterval;
         
         // Funciones para seleccionar opciones
         function selectMode(mode) {
@@ -226,20 +390,54 @@
             // Mostrar pantalla de juego
             document.getElementById('start-screen').style.display = 'none';
             document.getElementById('game-screen').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            // Iniciar barra de progreso
+            updateProgressBar();
             
             // Generar primer problema
             generateProblem();
             
             // Iniciar temporizador
             clearInterval(timerInterval);
+            clearInterval(progressInterval);
+            
             timerInterval = setInterval(function() {
                 timer--;
                 document.getElementById('timer-display').textContent = timer;
                 if (timer <= 0) {
                     clearInterval(timerInterval);
+                    clearInterval(progressInterval);
                     endGame();
                 }
             }, 1000);
+            
+            progressInterval = setInterval(updateProgressBar, 100);
+        }
+        
+        // Actualizar barra de progreso
+        function updateProgressBar() {
+            var maxTime;
+            
+            if (gameMode === 'classic') {
+                maxTime = (difficulty === 'easy') ? 30 : (difficulty === 'medium') ? 25 : 20;
+            } else if (gameMode === 'timed') {
+                maxTime = 60;
+            } else { // survival
+                maxTime = 10;
+            }
+            
+            var percentage = (timer / maxTime) * 100;
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            
+            // Cambiar color según el tiempo
+            if (percentage < 20) {
+                document.getElementById('progress-bar').style.backgroundColor = '#f44336'; // rojo
+            } else if (percentage < 50) {
+                document.getElementById('progress-bar').style.backgroundColor = '#ff9800'; // naranja
+            } else {
+                document.getElementById('progress-bar').style.backgroundColor = '#4caf50'; // verde
+            }
         }
         
         // Generar problema
@@ -350,6 +548,7 @@
         // Finalizar juego
         function endGame() {
             clearInterval(timerInterval);
+            clearInterval(progressInterval);
             
             document.getElementById('mode-result').textContent = 
                 (gameMode === 'classic') ? 'Clásico' : 
